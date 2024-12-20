@@ -32,7 +32,7 @@ spring:
     default_integration_domain_microservice_name: qip-engine # custom param
     default_integration_domain_name: default # custom param
   config:
-    import: ${CONSUL_URL:}
+    import: consul:${CONSUL_HOST:consul}:${CONSUL_PORT:8500}
   cloud:
     discovery:
       enabled: false
@@ -150,7 +150,7 @@ security:
   role-prefix: 'ROLE_'
 
 consul:
-  url: ${CONSUL_URL:http://consul:8500}
+  url: http://${CONSUL_HOST:consul}:${CONSUL_PORT:8500}
   token: ${CONSUL_ADMIN_TOKEN}
   keys:
     prefix: /config/${NAMESPACE}
