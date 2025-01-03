@@ -43,7 +43,7 @@
         <protobuf-java.version>3.25.1</protobuf-java.version>
         <amqp-client.version>5.20.0</amqp-client.version>
         <json-filter.version>4.0.1</json-filter.version>
-        <conscrypt-openjdk-uber.version>2.2.1</conscrypt-openjdk-uber.version>
+        <conscrypt-openjdk-uber.version>2.5.2</conscrypt-openjdk-uber.version>
         <springdoc.version>2.6.0</springdoc.version>
         <opensearch.version>2.14.0</opensearch.version>
         <jakarta.ws.rs-api.version>4.0.0</jakarta.ws.rs-api.version>
