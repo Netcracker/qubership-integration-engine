@@ -64,6 +64,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.qubership.integration.platform.engine.model.constants.CamelConstants.Properties.SERVICE_CALL_RETRY_COUNT;
+import static org.qubership.integration.platform.engine.model.constants.CamelConstants.Properties.SERVICE_CALL_RETRY_DELAY;
 import static org.qubership.integration.platform.engine.util.CheckpointUtils.*;
 
 @Slf4j
@@ -551,6 +553,7 @@ public class CamelDebugger extends DefaultDebugger {
             case SERVICE_CALL:
                 if (CamelNames.REQUEST_ATTEMPT_STEP_PREFIX.equals(stepName)) {
                     if (logLoggingLevel.isInfoLevel()) {
+                        setRetryParameters(exchange, dbgProperties, elementId);
                         chainLogger.logRequestAttempt(exchange, dbgProperties, elementId);
                     }
                 } else if (CamelNames.REQUEST_PREFIX.equals(stepName)) {
@@ -612,6 +615,7 @@ public class CamelDebugger extends DefaultDebugger {
             case SERVICE_CALL:
                 if (CamelNames.REQUEST_ATTEMPT_STEP_PREFIX.equals(stepName)) {
                     if (logLoggingLevel.isWarnLevel()) {
+                        setRetryParameters(exchange, dbgProperties, elementId);
                         chainLogger.logRetryRequestAttempt(exchange, dbgProperties, elementId);
                     }
                 }
@@ -750,6 +754,18 @@ public class CamelDebugger extends DefaultDebugger {
                 ChainProperties.FAILED_ELEMENT_ID, elementProperties.get(ChainProperties.ELEMENT_ID));
             exchange.setProperty(CamelConstants.Properties.ELEMENT_WARNING,Boolean.FALSE);
             DebuggerUtils.setOverallWarning(exchange, false);
+        }
+    }
+
+    private void setRetryParameters(Exchange exchange, CamelDebuggerProperties dbgProperties, String elementId) {
+        try {
+            Map<String, String> elementProperties = Optional.ofNullable(dbgProperties.getElementProperty(elementId)).orElse(Collections.emptyMap());
+            exchange.setProperty(SERVICE_CALL_RETRY_COUNT, variablesService.injectVariables(
+                    String.valueOf(elementProperties.get(SERVICE_CALL_RETRY_COUNT))));
+            exchange.setProperty(SERVICE_CALL_RETRY_DELAY, variablesService.injectVariables(
+                    String.valueOf(elementProperties.get(SERVICE_CALL_RETRY_DELAY))));
+        } catch (Exception e) {
+            log.error("Failed to set retry parameters for elementId: {}", elementId, e);
         }
     }
 }
