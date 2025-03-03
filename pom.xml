@@ -30,7 +30,7 @@
         <postgres-driver.version>42.7.2</postgres-driver.version>
         <hypersistence-utils-hibernate.version>3.7.4</hypersistence-utils-hibernate.version>
         <atlasmap.version>2.5.2</atlasmap.version>
-        <logback-gelf.version>5.0.1</logback-gelf.version>
+        <logback-gelf.version>6.1.1</logback-gelf.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <commons-text.version>1.11.0</commons-text.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
