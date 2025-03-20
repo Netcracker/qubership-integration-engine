@@ -10,14 +10,17 @@ categories:
     labels:
       - feature
       - enhancement
-  - title: '🐛 Bug Fixes'
+  - title: '🐞 Bug Fixes'
     labels:
       - bug
       - fix
       - bugfix
-  - title: '🛠️ Technical Debt'
+  - title: '⚙️ Technical Debt'
     labels:
       - refactor
+  - title: '📝 Documentation'
+    labels:
+      - documentation
 
 change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
 no-changes-template: 'No significant changes'
@@ -41,3 +44,4 @@ version-resolver:
     labels:
       - patch
   default: patch
+  
