@@ -702,7 +702,7 @@ public class CamelDebugger extends DefaultDebugger {
                     : Collections.emptyMap();
             exchange.setProperty(CamelConstants.Properties.REQUEST_CONTEXT_PROPAGATION_SNAPSHOT, snapshot);
 
-            exchange.setProperty(SYSTEM_PROPERTY_BLUEGREEN_STATE, this.exchangePropertyService.getCurrentState());
+            this.exchangePropertyService.initAdditionalExchangeProperties(exchange);
         }
     }
 

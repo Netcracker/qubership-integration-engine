@@ -16,6 +16,8 @@
 
 package org.qubership.integration.platform.engine.service;
 
+import org.apache.camel.Exchange;
+
 public interface ExchangePropertyService {
-    String getCurrentState();
+    void initAdditionalExchangeProperties(Exchange exchange);
 }

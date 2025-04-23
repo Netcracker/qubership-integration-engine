@@ -26,6 +26,6 @@ public class ExchangePropertyAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ExchangePropertyService.class)
     public ExchangePropertyService defaultExchangePropertyService() {
-        return () -> "unknown";
+        return exchange -> {};
     }
 }
