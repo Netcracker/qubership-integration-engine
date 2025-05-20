@@ -186,7 +186,7 @@ public class QipAtlasJsonFieldReader implements AtlasFieldReader {
             if (childNode == null) {
                 continue;
             }
-            if (childPath.getLastSegment().getCollectionType() != CollectionType.NONE) {
+            if (childPath.getLastSegment().getCollectionType() != CollectionType.NONE && childNode instanceof ArrayNode) {
                 FieldGroup childGroup = populateCollectionItems(session, (ArrayNode) childNode, child);
                 newChildren.add(childGroup);
             } else {
