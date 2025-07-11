@@ -25,6 +25,3 @@ create table IF NOT EXISTS context_system_records
     updated_at         TIMESTAMPTZ,
     expires_at         TIMESTAMPTZ
     );
-
-alter table context_system_records
-    owner to postgres;
