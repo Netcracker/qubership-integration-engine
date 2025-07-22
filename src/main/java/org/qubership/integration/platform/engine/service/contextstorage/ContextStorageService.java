@@ -50,7 +50,7 @@ public class ContextStorageService {
                 .contextServiceId(contextServiceId)
                 .contextId(contextId)
                 .createdAt(oldRecord.isPresent() ? oldRecord.get().getCreatedAt() : Timestamp.from(Instant.now()))
-                .expiresAt(oldRecord.isPresent() ? Timestamp.from(oldRecord.get().getExpiresAt().toInstant().plusSeconds(ttl)) : Timestamp.from(Instant.now().plusSeconds(ttl)))
+                .expiresAt(Timestamp.from(Instant.now().plusSeconds(ttl)))
                 .updatedAt(Timestamp.from(Instant.now()))
                 .build();
          contextStorageRepository.save(contextSystemRecords);
@@ -86,12 +86,14 @@ public class ContextStorageService {
     private static ContextData createNewContext(String key, String value) {
         Map<String, String> updatedContext = new HashMap<>();
         updatedContext.put(key, value);
+        log.info("Creating new context with key: {} and value: {}", key, value);
         return ContextData.builder().context(updatedContext).build();
     }
 
     public Map<String, String> getValue(String contextServiceId, String contextId, List<String> keys) {
-        Object jsonValue = contextStorageRepository.findByContextServiceIdAndContextId(contextServiceId, contextId).map(ContextSystemRecords::getValue).orElse(null);
-
+       Object jsonValue = contextStorageRepository.findByContextServiceIdAndContextId(contextServiceId, contextId)
+        .filter(record -> record.getExpiresAt().after(Timestamp.from(Instant.now())))
+        .map(ContextSystemRecords::getValue).orElse(null);
         if (jsonValue != null) {
             try {
                 JsonNode jsonNode = new ObjectMapper().readTree(jsonValue.toString());
@@ -102,13 +104,14 @@ public class ContextStorageService {
                 throw new RuntimeException(e);
             }
         }
-        log.error("Context keys: {}  with contextServiceId: {}, contextId: {} not found", keys, contextServiceId, contextId);
+        log.warn("Context keys: {}  with contextServiceId: {}, contextId: {} is either not present or expired", keys, contextServiceId, contextId);
         return null;
     }
 
     public void deleteValue(String contextServiceID, String contextId) {
         try {
             contextStorageRepository.deleteRecordByContextServiceIdAndContextId(contextServiceID, contextId);
+            log.info("Value deleted successfully for contextServiceID: {}, contextId: {}", contextServiceID, contextId);
         } catch (Exception e) {
             log.error("Error occurred while deleting value for contextServiceID: {}, contextId: {}", contextServiceID, contextId, e);
             throw e;
