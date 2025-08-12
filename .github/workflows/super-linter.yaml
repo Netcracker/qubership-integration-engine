@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: "Get the common linters configuration"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: main # fix/superlinter-config
         repository: netcracker/.github
@@ -55,7 +55,7 @@ jobs:
       statuses: write
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         # Full git history is needed to get a proper list of changed files within `super-linter`
         fetch-depth: 0
