@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.qubership.integration.platform.engine.camel.idempotency;
+package org.qubership.integration.platform.engine.service.contextstorage;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Data
-@Builder(toBuilder = true)
-@Getter
-@Setter
-public class IdempotentRepositoryParameters {
-    private int ttl;
-    private IdempotentRepositoryKeyStrategy keyStrategy;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ContextData {
+    private Map<String, String> context;
+
 }

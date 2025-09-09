@@ -19,7 +19,6 @@ spring:
     - org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration
     - org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration
     - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-    - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
     - org.apache.camel.component.quartz.springboot.QuartzComponentAutoConfiguration
   main:
     allow-bean-definition-overriding: true
@@ -55,7 +54,10 @@ spring:
           use_jdbc_metadata_defaults: false # disable connection during init
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: engine
+        order_inserts: true
+        order_updates: true
         jdbc:
+          batch_size: 30
           time_zone: UTC
           lob:
             non_contextual_creation: true
@@ -64,12 +66,6 @@ spring:
   jackson:
     serialization:
       indent-output: true
-  data:
-    redis:
-      host: ${REDIS_HOST:redis}
-      port: ${REDIS_PORT:6379}
-      username: ${REDIS_USER:}
-      password: ${REDIS_PASSWORD:}
 
 app:
   prefix: qip
@@ -142,6 +138,8 @@ db:
         minimum-idle: ${db.hikari.datasources.datasource.minimum-idle}
         idle-timeout: ${db.hikari.datasources.datasource.idle-timeout}
         leak-detection-threshold: ${db.hikari.datasources.datasource.leak-detection-threshold}
+        dataSourceProperties:
+          reWriteBatchedInserts: true
       qrtz-datasource:
         driver-class-name: ${db.hikari.datasources.datasource.driver-class-name}
         jdbcUrl: jdbc:postgresql://${POSTGRES_URL:postgres:5432}/engine_qrtz_db
@@ -206,6 +204,9 @@ qip:
     thread-pool:
       core-size: 3
       max-size: 3
+  context-service:
+    cleanup:
+      cron: ${CONTEXT_RECORDS_CLEANUP_CRON:0 0 0 ? * SAT} #  Cleanup task schedule in cron expression format
   opensearch:
     client:
       urls: ${OPENSEARCH_PROTOCOL:http}://${OPENSEARCH_HOST:opensearch}:${OPENSEARCH_PORT:9200}
@@ -257,6 +258,7 @@ qip:
       cleanup:
         interval: ${SESSIONS_CHECKPOINTS_CLEANUP_INTERVAL:1 month} # logs older than interval will be deleted, for example: '1 hour', '7 days', '2 years 3 month'
         cron: ${SESSIONS_CHECKPOINTS_CLEANUP_CRON:0 0 0 ? * SAT} #  Cleanup task schedule in cron expression format
+
   local-truststore:
     store:
       path: /tmp/truststore/defaulttruststore.jks
@@ -271,7 +273,7 @@ qip:
   restclient:
     timeout: 300000
   idempotency:
-    enabled: ${IDEMPOTENCY_ENABLED:false}
+    expired-records-cleanup-cron: ${IDEMPOTENCY_RECORDS_CLEANUP_CRON:0 */5 * ? * *}
 
 kubernetes:
   devmode: ${KUBE_DEV_MODE:false}

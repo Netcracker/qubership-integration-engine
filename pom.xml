@@ -2,14 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership</groupId>
+    <groupId>org.qubership.integration.platform</groupId>
     <artifactId>qip-engine</artifactId>
     <version>${revision}</version>
+    <name>QIP Engine</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.7</version>
     </parent>
 
     <properties>
@@ -17,7 +18,7 @@
         <generated-resources>target/generated-sources/resources</generated-resources>
         <java.version>21</java.version>
 
-        <revision>0.1.5</revision>
+        <revision>0.2.4</revision>
 
         <groovy-apache-bom.version>4.0.21</groovy-apache-bom.version>
         <jackson-bom.version>2.17.0</jackson-bom.version>
@@ -42,7 +43,7 @@
         <amqp-client.version>5.20.0</amqp-client.version>
         <json-filter.version>4.0.1</json-filter.version>
         <conscrypt-openjdk-uber.version>2.2.1</conscrypt-openjdk-uber.version>
-        <springdoc.version>2.6.0</springdoc.version>
+        <springdoc.version>2.8.8</springdoc.version>
         <opensearch.version>2.14.0</opensearch.version>
         <jakarta.ws.rs-api.version>4.0.0</jakarta.ws.rs-api.version>
         <reflections.version>0.10.2</reflections.version>
@@ -52,7 +53,7 @@
         <jacoco-plugin.version>0.8.11</jacoco-plugin.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <values-schema-json-plugin.version>1.1.1</values-schema-json-plugin.version>
-        <qip-checkstyle-revision>0.0.2</qip-checkstyle-revision>
+        <qip-checkstyle-revision>0.0.3</qip-checkstyle-revision>
     </properties>
 
     <dependencyManagement>
@@ -300,10 +301,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
@@ -454,10 +451,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jsonpath</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring-redis</artifactId>
         </dependency>
 
         <!-- Mapper dependencies -->
@@ -872,7 +865,7 @@
                         <version>9.3</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.qubership</groupId>
+                        <groupId>org.qubership.integration.platform</groupId>
                         <artifactId>qip-checkstyle</artifactId>
                         <version>${qip-checkstyle-revision}</version>
                     </dependency>

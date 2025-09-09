@@ -19,6 +19,8 @@ package org.qubership.integration.platform.engine.persistence.shared.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Builder.Default;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -45,6 +47,7 @@ public class Checkpoint {
     private String checkpointElementId;
 
     @OneToMany(orphanRemoval = true, mappedBy = "checkpoint", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Property> properties = new LinkedList<>();
 
     @Column(columnDefinition = "TEXT")
@@ -54,9 +57,15 @@ public class Checkpoint {
     @Column(columnDefinition = "TEXT")
     private String contextData;
 
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "body_bytea")
+    private byte[] body;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private byte[] body;
+    @Column(name = "body")
+    @Deprecated
+    private byte[] deprecatedBody;
 
     @Default
     private Timestamp timestamp = Timestamp.from(new Date().toInstant());
