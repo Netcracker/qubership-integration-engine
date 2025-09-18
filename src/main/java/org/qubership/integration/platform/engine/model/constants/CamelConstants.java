@@ -135,11 +135,11 @@ public final class CamelConstants {
         public static final String OVERRIDE_CONTEXT_PARAMS = INTERNAL_PROPERTY_PREFIX + "overrideContextParams";
         public static final String ENABLE_AUTH_RESTORE_PROP = INTERNAL_PROPERTY_PREFIX + "enableAuthRestore";
         public static final String DEPLOYMENT_RUNTIME_PROPERTIES_MAP_PROP = INTERNAL_PROPERTY_PREFIX + "deploymentRuntimePropertiesMap";
-        public static final String ABAC_RESOURCE_STRING_PROP = INTERNAL_PROPERTY_PREFIX + "abacResourceString";
-        public static final String ABAC_RESOURCE_MAP_PROP = INTERNAL_PROPERTY_PREFIX + "abacResourceMap";
-        public static final String ABAC_RESOURCE_TYPE_PROP = INTERNAL_PROPERTY_PREFIX + "abacResourceType";
-        public static final String ABAC_OPERATION = INTERNAL_PROPERTY_PREFIX + "abacOperation";
-        public static final String ABAC_RESOURCE_DATA_TYPE = INTERNAL_PROPERTY_PREFIX + "abacResourceDataType";
+        public static final String ABAC_RESOURCE_STRING_PROP =  INTERNAL_PROPERTY_PREFIX + "abacResourceString";
+        public static final String ABAC_RESOURCE_MAP_PROP =  INTERNAL_PROPERTY_PREFIX + "abacResourceMap";
+        public static final String ABAC_RESOURCE_TYPE_PROP =  INTERNAL_PROPERTY_PREFIX + "abacResourceType";
+        public static final String ABAC_OPERATION =   INTERNAL_PROPERTY_PREFIX + "abacOperation";
+        public static final String ABAC_RESOURCE_DATA_TYPE =   INTERNAL_PROPERTY_PREFIX + "abacResourceDataType";
         public static final String ACKNOWLEDGE_MODE_PROP = INTERNAL_PROPERTY_PREFIX + "acknowledgeMode";
         public static final String PRESERVED_AUTH_PROP = INTERNAL_PROPERTY_PREFIX + "preservedAuth";
         public static final String INTERRUPT_EXCHANGE_HTTP_CODE_PROP = INTERNAL_PROPERTY_PREFIX + "interruptExchangeHttpCode";
