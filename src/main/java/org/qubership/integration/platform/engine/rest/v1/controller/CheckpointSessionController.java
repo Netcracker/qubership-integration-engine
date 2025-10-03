@@ -29,9 +29,11 @@ import org.qubership.integration.platform.engine.rest.v1.mapper.SessionInfoMappe
 import org.qubership.integration.platform.engine.service.CheckpointSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,11 +63,19 @@ public class CheckpointSessionController {
         @PathVariable @Parameter(description = "Session id") String sessionId,
         @RequestHeader(required = false, defaultValue = "") @Parameter(description = "If passed, Authorization header will be replaced with this value") String authorization,
         @RequestHeader(required = false, defaultValue = "false") @Parameter(description = "Enable TraceMe header, which will force session to be logged") boolean traceMe,
+        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "false") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
         @RequestBody(required = false) @Parameter(description = "If passed, request body will be replaced with this value") String body
     ) {
         log.info("Request to retry session {}", sessionId);
+        if(StringUtils.hasText(XIdempotencyKey)){
+            if(!checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)){
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT).build();
+            }
+        }
         checkpointSessionService.retryFromLastCheckpoint(chainId, sessionId, body, toAuthSupplier(authorization), traceMe);
         return ResponseEntity.accepted().build();
+        //this is where I need to make changes
     }
 
     @PostMapping("/sessions/{sessionId}/checkpoint-elements/{checkpointElementId}/retry")
@@ -76,11 +86,19 @@ public class CheckpointSessionController {
         @PathVariable @Parameter(description = "Checkpoint element id (could be found on chain graph in checkpoint element itself)") String checkpointElementId,
         @RequestHeader(required = false, defaultValue = "") @Parameter(description = "If passed, Authorization header will be replaced with this value") String authorization,
         @RequestHeader(required = false, defaultValue = "false") @Parameter(description = "Enable TraceMe header, which will force session to be logged") boolean traceMe,
+        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "false") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
         @RequestBody(required = false) @Parameter(description = "If passed, request body will be replaced with this value") String body
     ) {
         log.info("Request to retry session {} from checkpoint {}", sessionId, checkpointElementId);
+        if(StringUtils.hasText(XIdempotencyKey)){
+            if(!checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)){
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT).build();
+            }
+        }
         checkpointSessionService.retryFromCheckpoint(chainId, sessionId, checkpointElementId, body, toAuthSupplier(authorization), traceMe);
         return ResponseEntity.accepted().build();
+        //This is where I need to make changes
     }
 
     @Transactional("checkpointTransactionManager")

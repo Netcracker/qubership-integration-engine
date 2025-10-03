@@ -52,15 +52,18 @@ public class CheckpointSessionService {
     private final CheckpointRepository checkpointRepository;
     private final WebClient localhostWebclient;
     private final ObjectMapper jsonMapper;
+    private final IdempotencyRecordService idempotencyRecordService;
+    private static final int TTL = 10000;
 
     @Autowired
     public CheckpointSessionService(SessionInfoRepository sessionInfoRepository,
         CheckpointRepository checkpointRepository, WebClient localhostWebclient,
-        @Qualifier("jsonMapper") ObjectMapper jsonMapper) {
+        @Qualifier("jsonMapper") ObjectMapper jsonMapper, IdempotencyRecordService idempotencyRecordService) {
         this.sessionInfoRepository = sessionInfoRepository;
         this.checkpointRepository = checkpointRepository;
         this.localhostWebclient = localhostWebclient;
         this.jsonMapper = jsonMapper;
+        this.idempotencyRecordService = idempotencyRecordService;
     }
 
     @Transactional("checkpointTransactionManager")
@@ -204,5 +207,22 @@ public class CheckpointSessionService {
     @Transactional("checkpointTransactionManager")
     public void deleteOldRecordsByInterval(String checkpointsInterval) {
         sessionInfoRepository.deleteOldRecordsByInterval(checkpointsInterval);
+    }
+
+    @Transactional("checkpointTransactionManager")
+    public boolean verifyAndInsertIfNotExistIdempotencyKey(String xIdempotencyKey, String sessionId) {
+        String uniqueIdempotencyKey = getUniqueKeyForIdempotency(xIdempotencyKey, sessionId);
+        boolean idempotencyKeyExists = this.idempotencyRecordService.exists(uniqueIdempotencyKey);
+        if(!idempotencyKeyExists){
+            log.info("Idempotency key does not exist or expired, inserting or updating the key: {}, sessionId: {}", uniqueIdempotencyKey, sessionId);
+            this.idempotencyRecordService.insertIfNotExists(uniqueIdempotencyKey, TTL);
+            return true;
+        }
+        log.info("Idempotency key exists and not expired, key: {}, sessionId: {}", uniqueIdempotencyKey, sessionId);
+        return false;
+    }
+
+    private String getUniqueKeyForIdempotency(String xIdempotencyKey, String sessionId) {
+        return "session-retries:"+":"+sessionId+":"+xIdempotencyKey;
     }
 }
