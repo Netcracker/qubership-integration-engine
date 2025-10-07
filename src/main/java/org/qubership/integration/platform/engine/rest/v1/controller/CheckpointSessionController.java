@@ -63,19 +63,17 @@ public class CheckpointSessionController {
         @PathVariable @Parameter(description = "Session id") String sessionId,
         @RequestHeader(required = false, defaultValue = "") @Parameter(description = "If passed, Authorization header will be replaced with this value") String authorization,
         @RequestHeader(required = false, defaultValue = "false") @Parameter(description = "Enable TraceMe header, which will force session to be logged") boolean traceMe,
-        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "false") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
+        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
         @RequestBody(required = false) @Parameter(description = "If passed, request body will be replaced with this value") String body
     ) {
         log.info("Request to retry session {}", sessionId);
-        if(StringUtils.hasText(XIdempotencyKey)){
-            if(!checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)){
-                return ResponseEntity
-                        .status(HttpStatus.CONFLICT).build();
-            }
+        if (StringUtils.hasText(XIdempotencyKey)
+                && checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)) {
+            log.info("Duplicate Idempotency key found, key: {}, sessionId: {}", XIdempotencyKey, sessionId);
+            return ResponseEntity.accepted().build();
         }
         checkpointSessionService.retryFromLastCheckpoint(chainId, sessionId, body, toAuthSupplier(authorization), traceMe);
         return ResponseEntity.accepted().build();
-        //this is where I need to make changes
     }
 
     @PostMapping("/sessions/{sessionId}/checkpoint-elements/{checkpointElementId}/retry")
@@ -86,19 +84,17 @@ public class CheckpointSessionController {
         @PathVariable @Parameter(description = "Checkpoint element id (could be found on chain graph in checkpoint element itself)") String checkpointElementId,
         @RequestHeader(required = false, defaultValue = "") @Parameter(description = "If passed, Authorization header will be replaced with this value") String authorization,
         @RequestHeader(required = false, defaultValue = "false") @Parameter(description = "Enable TraceMe header, which will force session to be logged") boolean traceMe,
-        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "false") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
+        @RequestHeader(name = "X-Idempotency-Key", required = false, defaultValue = "") @Parameter(description = "Idempotency header, which will be used to identify duplicate request") String XIdempotencyKey,
         @RequestBody(required = false) @Parameter(description = "If passed, request body will be replaced with this value") String body
     ) {
         log.info("Request to retry session {} from checkpoint {}", sessionId, checkpointElementId);
-        if(StringUtils.hasText(XIdempotencyKey)){
-            if(!checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)){
-                return ResponseEntity
-                        .status(HttpStatus.CONFLICT).build();
-            }
+        if (StringUtils.hasText(XIdempotencyKey)
+                && checkpointSessionService.verifyAndInsertIfNotExistIdempotencyKey(XIdempotencyKey, sessionId)) {
+            log.info("Duplicate Idempotency key found, key: {}, sessionId: {}", XIdempotencyKey, sessionId);
+            return ResponseEntity.accepted().build();
         }
         checkpointSessionService.retryFromCheckpoint(chainId, sessionId, checkpointElementId, body, toAuthSupplier(authorization), traceMe);
         return ResponseEntity.accepted().build();
-        //This is where I need to make changes
     }
 
     @Transactional("checkpointTransactionManager")

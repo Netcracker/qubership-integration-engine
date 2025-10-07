@@ -30,6 +30,7 @@ import org.qubership.integration.platform.engine.persistence.shared.repository.C
 import org.qubership.integration.platform.engine.persistence.shared.repository.SessionInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -53,7 +54,8 @@ public class CheckpointSessionService {
     private final WebClient localhostWebclient;
     private final ObjectMapper jsonMapper;
     private final IdempotencyRecordService idempotencyRecordService;
-    private static final int TTL = 10000;
+    @Value("${qip.sessions.checkpoints.cleanup.interval}")
+    private String idempotencyKeyTTL;
 
     @Autowired
     public CheckpointSessionService(SessionInfoRepository sessionInfoRepository,
@@ -215,14 +217,16 @@ public class CheckpointSessionService {
         boolean idempotencyKeyExists = this.idempotencyRecordService.exists(uniqueIdempotencyKey);
         if(!idempotencyKeyExists){
             log.info("Idempotency key does not exist or expired, inserting or updating the key: {}, sessionId: {}", uniqueIdempotencyKey, sessionId);
-            this.idempotencyRecordService.insertIfNotExists(uniqueIdempotencyKey, TTL);
-            return true;
+            this.idempotencyRecordService.insertIfNotExists(uniqueIdempotencyKey, idempotencyKeyTTL);
+            return false;
         }
         log.info("Idempotency key exists and not expired, key: {}, sessionId: {}", uniqueIdempotencyKey, sessionId);
-        return false;
+        return true;
     }
 
-    private String getUniqueKeyForIdempotency(String xIdempotencyKey, String sessionId) {
-        return "session-retries:"+":"+sessionId+":"+xIdempotencyKey;
+    public String getUniqueKeyForIdempotency(String xIdempotencyKey, String sessionId) {
+        String prefix = "session-retries";
+        String separator = ":";
+        return String.join(separator, prefix, sessionId, xIdempotencyKey);
     }
 }
