@@ -48,28 +48,6 @@ public interface IdempotencyRecordRepository extends JpaRepository<IdempotencyRe
     @Query(
             nativeQuery = true,
             value = """
-                delete from engine.idempotency_records r where r.expires_at < now()
-            """
-    )
-    void deleteExpired();
-
-    @Modifying
-    @Query(
-            nativeQuery = true,
-            value = """
-                delete from
-                    engine.idempotency_records r
-                where
-                    r.key = :key
-                    and r.expires_at >= now()
-            """
-    )
-    int deleteByKeyAndNotExpired(String key);
-
-    @Modifying
-    @Query(
-            nativeQuery = true,
-            value = """
         insert into
             engine.idempotency_records as r
                 (key, data, created_at, expires_at)
@@ -90,4 +68,25 @@ public interface IdempotencyRecordRepository extends JpaRepository<IdempotencyRe
     )
     int insertIfNotExistsOrUpdateIfExpired(String key, String data, String ttl);
 
+    @Modifying
+    @Query(
+            nativeQuery = true,
+            value = """
+                delete from engine.idempotency_records r where r.expires_at < now()
+            """
+    )
+    void deleteExpired();
+
+    @Modifying
+    @Query(
+            nativeQuery = true,
+            value = """
+                delete from
+                    engine.idempotency_records r
+                where
+                    r.key = :key
+                    and r.expires_at >= now()
+            """
+    )
+    int deleteByKeyAndNotExpired(String key);
 }
