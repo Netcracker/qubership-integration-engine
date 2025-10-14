@@ -60,4 +60,11 @@ public class IdempotencyRecordService {
             return null;
         }
     }
+
+    @Transactional("checkpointTransactionManager")
+    public boolean insertIfNotExists(String key, String ttl) {
+        String data = buildIdempotencyRecordData();
+        return idempotencyRecordRepository
+                .insertIfNotExistsOrUpdateIfExpired(key, data, ttl) > 0;
+    }
 }
