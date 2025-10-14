@@ -160,6 +160,7 @@ public final class CamelConstants {
 
         public static final String SERVICE_CALL_RETRY_COUNT = "retryCount";
         public static final String SERVICE_CALL_RETRY_DELAY = "retryDelay";
+        public static final String SEND_EMPTY_QUERY_PARAMS = "sendEmptyQueryParams";
 
         public static final int SERVICE_CALL_DEFAULT_RETRY_DELAY = 5000;
 
