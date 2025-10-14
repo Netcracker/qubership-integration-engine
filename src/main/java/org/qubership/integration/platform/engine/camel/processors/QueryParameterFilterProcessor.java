@@ -31,6 +31,7 @@ public class QueryParameterFilterProcessor implements Processor {
 
     private static final String SERVICE_CALL_SEND_EMPTY_QUERY_PARAMS = "serviceCallSendEmptyQueryParams";
     private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "serviceCallQueryParameter_";
+
     @Override
     public void process(Exchange exchange) throws Exception {
         Message message = exchange.getMessage();
