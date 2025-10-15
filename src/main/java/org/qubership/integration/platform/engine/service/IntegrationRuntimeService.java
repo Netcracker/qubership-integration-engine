@@ -29,8 +29,6 @@ import org.apache.camel.Component;
 import org.apache.camel.component.jackson.JacksonConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.engine.DefaultStreamCachingStrategy;
-import org.apache.camel.management.DefaultManagementAgent;
-import org.apache.camel.management.JmxManagementStrategy;
 import org.apache.camel.model.*;
 import org.apache.camel.model.language.ExpressionDefinition;
 import org.apache.camel.observation.MicrometerObservationTracer;
@@ -577,8 +575,6 @@ public class IntegrationRuntimeService {
         context.setClassResolver(getClassResolver(context, deploymentConfiguration));
 
         String deploymentId = deploymentInfo.getDeploymentId();
-        context.setManagementName("camel-context_" + deploymentId); // use repeatable after restart context name
-        context.setManagementStrategy(new JmxManagementStrategy(context, new DefaultManagementAgent(context)));
 
         // Every time a new instance of CamelDebugger is injected
         CamelDebugger debugger = CDI.current().select(CamelDebugger.class).getHandle().get();
