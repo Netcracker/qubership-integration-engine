@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class QueryParameterFilterProcessor implements Processor {
 
-    private static final String SERVICE_CALL_SEND_EMPTY_QUERY_PARAMS = "serviceCallSendEmptyQueryParams";
+    private static final String SERVICE_CALL_SKIP_EMPTY_QUERY_PARAMS = "serviceCallSkipEmptyQueryParams";
     private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "serviceCallQueryParameter_";
 
     @Override
@@ -41,10 +41,10 @@ public class QueryParameterFilterProcessor implements Processor {
             return;
         }
 
-        Object sendEmptyParamsProperty = exchange.getProperty(SERVICE_CALL_SEND_EMPTY_QUERY_PARAMS);
-        boolean sendEmptyParams = sendEmptyParamsProperty != null && Boolean.parseBoolean(String.valueOf(sendEmptyParamsProperty));
+        Object skipEmptyParamsProperty = exchange.getProperty(SERVICE_CALL_SKIP_EMPTY_QUERY_PARAMS);
+        boolean shouldSkipEmptyParams = skipEmptyParamsProperty != null && Boolean.parseBoolean(String.valueOf(skipEmptyParamsProperty));
 
-        if (!sendEmptyParams) {
+        if (shouldSkipEmptyParams) {
             String finalUri = generateFilteredQueryParams(uri, exchange);
             message.setHeader(CamelConstants.Headers.HTTP_URI, finalUri);
         }
