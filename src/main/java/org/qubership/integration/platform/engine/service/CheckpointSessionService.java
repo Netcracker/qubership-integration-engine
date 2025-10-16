@@ -215,7 +215,7 @@ public class CheckpointSessionService {
     public boolean verifyAndInsertIfNotExistIdempotencyKey(String xIdempotencyKey, String sessionId) {
         String uniqueIdempotencyKey = getUniqueKeyForIdempotency(xIdempotencyKey, sessionId);
         boolean idempotencyKeyExists = this.idempotencyRecordService.exists(uniqueIdempotencyKey);
-        if(!idempotencyKeyExists){
+        if (!idempotencyKeyExists) {
             log.info("Idempotency key does not exist or expired, inserting or updating the key: {}, sessionId: {}", uniqueIdempotencyKey, sessionId);
             this.idempotencyRecordService.insertIfNotExists(uniqueIdempotencyKey, idempotencyKeyTTL);
             return false;
