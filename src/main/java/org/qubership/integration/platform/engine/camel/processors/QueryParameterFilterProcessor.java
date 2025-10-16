@@ -31,6 +31,7 @@ public class QueryParameterFilterProcessor implements Processor {
 
     private static final String SERVICE_CALL_SKIP_EMPTY_QUERY_PARAMS = "serviceCallSkipEmptyQueryParams";
     private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "serviceCallQueryParameter_";
+    private static final String SERVICE_CALL_URL = "serviceCallUrl";
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -46,6 +47,7 @@ public class QueryParameterFilterProcessor implements Processor {
 
         if (shouldSkipEmptyParams) {
             String finalUri = generateFilteredQueryParams(uri, exchange);
+            exchange.setProperty(SERVICE_CALL_URL, finalUri);
             message.setHeader(CamelConstants.Headers.HTTP_URI, finalUri);
         }
     }
