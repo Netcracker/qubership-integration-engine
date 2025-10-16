@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class QueryParameterFilterProcessor implements Processor {
 
     private static final String SERVICE_CALL_SKIP_EMPTY_QUERY_PARAMS = "serviceCallSkipEmptyQueryParams";
-    private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "serviceCallQueryParameter_";
+    private static final String INTERNAL_PROPERTY_QUERY_PARAM_PREFIX  = "internalProperty_queryParam_";
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -54,9 +54,9 @@ public class QueryParameterFilterProcessor implements Processor {
         StringBuilder queryString = new StringBuilder();
 
         exchange.getProperties().entrySet().stream()
-            .filter(entry -> entry.getKey().startsWith(SERVICE_CALL_QUERY_PARAMETER_PREFIX))
+            .filter(entry -> entry.getKey().startsWith(INTERNAL_PROPERTY_QUERY_PARAM_PREFIX))
             .forEach(entry -> {
-                String paramName = entry.getKey().substring(SERVICE_CALL_QUERY_PARAMETER_PREFIX.length());
+                String paramName = entry.getKey().substring(INTERNAL_PROPERTY_QUERY_PARAM_PREFIX.length());
                 String paramValue = (String) entry.getValue();
 
                 if (!StringUtils.isEmpty(paramValue)) {
