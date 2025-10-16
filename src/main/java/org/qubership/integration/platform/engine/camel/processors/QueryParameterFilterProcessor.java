@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class QueryParameterFilterProcessor implements Processor {
 
     private static final String SERVICE_CALL_SKIP_EMPTY_QUERY_PARAMS = "serviceCallSkipEmptyQueryParams";
-    private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "serviceCallQueryParameter_";
+    private static final String SERVICE_CALL_QUERY_PARAMETER_PREFIX  = "protectedQueryParameter_";
     private static final String SERVICE_CALL_URL = "serviceCallUrl";
 
     @Override
