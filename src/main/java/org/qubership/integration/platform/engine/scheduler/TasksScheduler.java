@@ -29,7 +29,6 @@ import org.qubership.integration.platform.engine.consul.updates.UpdateGetterHelp
 import org.qubership.integration.platform.engine.model.deployment.properties.DeploymentRuntimeProperties;
 import org.qubership.integration.platform.engine.model.kafka.systemmodel.CompiledLibraryUpdate;
 import org.qubership.integration.platform.engine.service.CheckpointSessionService;
-import org.qubership.integration.platform.engine.service.DeploymentsUpdateService;
 import org.qubership.integration.platform.engine.service.IntegrationRuntimeService;
 import org.qubership.integration.platform.engine.service.VariablesService;
 import org.qubership.integration.platform.engine.service.contextstorage.ContextStorageService;
@@ -71,9 +70,6 @@ public class TasksScheduler {
     @Inject
     @Named("commonVariablesUpdateGetter")
     UpdateGetterHelper<Map<String, String>> commonVariablesUpdateGetter;
-
-    @Inject
-    DeploymentsUpdateService deploymentsUpdateService;
 
     @Inject
     Instance<ExternalLibraryService> externalLibraryService;
@@ -144,38 +140,6 @@ public class TasksScheduler {
     public void cleanupContextStorage() {
         contextStorageService.deleteOldRecords();
         log.info("Scheduled context record cleanup completed");
-    }
-
-    @Scheduled(
-            every = "PT2.5S",
-            concurrentExecution = Scheduled.ConcurrentExecution.SKIP,
-            skipExecutionIf = Scheduled.ApplicationNotRunning.class
-    )
-    public void checkDeploymentUpdates() {
-        if (!deploymentReadinessService.isReadyForDeploy()) {
-            return;
-        }
-
-        boolean firstDeploy = !deploymentReadinessService.isInitialized();
-        try {
-            if (firstDeploy) {
-                deploymentsUpdateService.getAndProcess();
-                runtimeService.startSuspendedRoutesOnInit();
-                deploymentReadinessService.setInitialized(true);
-            } else {
-                deploymentUpdateGetter.checkForUpdates(changes -> {
-                    try {
-                        deploymentsUpdateService.getAndProcess();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-        } catch (KVNotFoundException e) {
-            log.debug("Deployments update KV is empty. {}", e.getMessage());
-        } catch (Exception e) {
-            log.error("Failed to get or process deployments from runtime catalog: {}", e.getMessage());
-        }
     }
 
     @Scheduled(
