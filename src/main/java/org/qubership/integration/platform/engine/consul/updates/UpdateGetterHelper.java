@@ -82,7 +82,7 @@ public class UpdateGetterHelper<T> {
         try {
             getUpdates().ifPresent(consumer);
         } catch (Exception e) {
-            log.error("Failed to check for updates or process them", e);
+            log.error("Failed to check for updates or process them: {}", e.getMessage());
             rollbackLastIndex();
             throw e;
         }

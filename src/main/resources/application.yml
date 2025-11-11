@@ -32,7 +32,7 @@ camel:
     enabled: true
   main:
     name: Camel Context
-    autoStartup: false
+    autoStartup: true
     messageHistory: true
     streamCachingEnabled: true # enable exchange payload spooling
     streamCachingBufferSize: 16384

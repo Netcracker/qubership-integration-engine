@@ -44,13 +44,26 @@ public class MetricTagsHelper {
         ElementProperties elementProperties,
         String chainName
     ) {
+        return buildMetricTags(
+                deploymentInfo.getChainId(),
+                chainName,
+                elementProperties.getProperties().get(ChainProperties.ELEMENT_ID),
+                elementProperties.getProperties().get(ChainProperties.ELEMENT_NAME)
+        );
+    }
+
+    public Collection<Tag> buildMetricTags(
+            String chainId,
+            String chainName,
+            String elementId,
+            String elementName
+    ) {
         return new ArrayList<>(Arrays.asList(
-            Tag.of(CHAIN_ID_TAG, deploymentInfo.getChainId()),
-            Tag.of(CHAIN_NAME_TAG, chainName),
-            Tag.of(ELEMENT_ID_TAG, elementProperties.getProperties().get(ChainProperties.ELEMENT_ID)),
-            Tag.of(ELEMENT_NAME_TAG, elementProperties.getProperties().get(
-                ChainProperties.ELEMENT_NAME)),
-            Tag.of(ENGINE_DOMAIN_TAG, engineInfo.getDomain()))
+                Tag.of(CHAIN_ID_TAG, chainId),
+                Tag.of(CHAIN_NAME_TAG, chainName),
+                Tag.of(ELEMENT_ID_TAG, elementId),
+                Tag.of(ELEMENT_NAME_TAG, elementName),
+                Tag.of(ENGINE_DOMAIN_TAG, engineInfo.getDomain()))
         );
     }
 }

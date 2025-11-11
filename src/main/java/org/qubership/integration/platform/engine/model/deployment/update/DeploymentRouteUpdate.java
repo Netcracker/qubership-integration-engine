@@ -31,7 +31,7 @@ public class DeploymentRouteUpdate {
     @Nullable
     private String gatewayPrefix; // for senders and services
     @Nullable
-    private String variableName; // to substitute with resolved path
+    private String variableName; // to substitute with a resolved path
     private RouteType type;
     @Builder.Default
     private Long connectTimeout = -1L;

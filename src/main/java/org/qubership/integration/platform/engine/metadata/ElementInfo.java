@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChainInfo {
+public class ElementInfo {
     private String id;
     private String name;
+    private String type;
 }
