@@ -19,6 +19,11 @@ public class ChainInfoBuilder {
         return this;
     }
 
+    public ChainInfoBuilder version(String value) {
+        delegate.version(value);
+        return this;
+    }
+
     public ChainInfo build() {
         return delegate.build();
     }

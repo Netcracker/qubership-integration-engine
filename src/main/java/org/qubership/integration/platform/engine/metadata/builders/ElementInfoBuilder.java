@@ -24,6 +24,21 @@ public class ElementInfoBuilder {
         return this;
     }
 
+    public ElementInfoBuilder parentId(String value) {
+        delegate.parentId(value);
+        return this;
+    }
+
+    public ElementInfoBuilder reuseId(String value) {
+        delegate.reuseId(value);
+        return this;
+    }
+
+    public ElementInfoBuilder hasIntermediateParents(boolean value) {
+        delegate.hasIntermediateParents(value);
+        return this;
+    }
+
     public ElementInfo build() {
         return delegate.build();
     }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ChainInfo {
     private String id;
     private String name;
+    private String version;
 }
