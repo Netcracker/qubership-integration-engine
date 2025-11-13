@@ -19,9 +19,9 @@ package org.qubership.integration.platform.engine.unit.util;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.Instance;
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.qubership.integration.platform.engine.util.InjectUtil;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -29,21 +29,21 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class InjectUtilTest {
 
     @Test
-    void should_throw_AmbiguousResolutionException_when_instance_is_ambiguous() {
+    void shouldThrowAmbiguousResolutionExceptionWhenInstanceIsAmbiguous() {
         @SuppressWarnings("unchecked")
         Instance<String> inst = mock(Instance.class);
         when(inst.isAmbiguous()).thenReturn(true);
 
         assertThrows(AmbiguousResolutionException.class, () -> InjectUtil.injectOptional(inst));
-        verify(inst, never()).stream(); // убедимся, что к stream() не обращались
+        verify(inst, never()).stream();
     }
 
     @Test
-    void should_return_empty_optional_when_instance_stream_is_empty() {
+    void shouldReturnEmptyOptionalWhenInstanceStreamIsEmpty() {
         @SuppressWarnings("unchecked")
         Instance<String> inst = mock(Instance.class);
         when(inst.isAmbiguous()).thenReturn(false);
@@ -56,7 +56,7 @@ class InjectUtilTest {
     }
 
     @Test
-    void should_return_first_element_when_instance_stream_has_values() {
+    void shouldReturnFirstElementWhenInstanceStreamHasValues() {
         @SuppressWarnings("unchecked")
         Instance<String> inst = mock(Instance.class);
         when(inst.isAmbiguous()).thenReturn(false);
@@ -70,7 +70,7 @@ class InjectUtilTest {
     }
 
     @Test
-    void should_allow_null_instance_to_throw_NPE_as_contract() {
+    void shouldAllowNullInstanceToThrowNpeAsContract() {
         assertThrows(NullPointerException.class, () -> InjectUtil.injectOptional(null));
     }
 }

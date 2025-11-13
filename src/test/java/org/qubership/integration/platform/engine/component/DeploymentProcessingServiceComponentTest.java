@@ -5,17 +5,20 @@ import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import org.qubership.integration.platform.engine.component.profile.DeploymentTestProfile;
 import org.qubership.integration.platform.engine.service.deployment.processing.DeploymentProcessingService;
 import org.qubership.integration.platform.engine.utils.DeploymentUtils;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 import org.qubership.integration.platform.engine.utils.RouteTestHelpers;
+import org.qubership.integration.platform.engine.utils.profile.DeploymentTestProfile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 @TestProfile(DeploymentTestProfile.class)
-class DeploymentProcessingServiceAdviceTest {
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
+class DeploymentProcessingServiceComponentTest {
 
     @Inject
     DeploymentProcessingService deploymentProcessingService;
@@ -24,7 +27,7 @@ class DeploymentProcessingServiceAdviceTest {
     CamelContext camelContext;
 
     @Test
-    void when_condition_true_then_If() throws Exception {
+    void whenConditionTrueThenIf() throws Exception {
         String xmlRoutes = DeploymentUtils.loadXml("routes/choice.xml");
 
         var deploymentUpdate = DeploymentUtils.deploymentFromXml(xmlRoutes);
@@ -45,7 +48,7 @@ class DeploymentProcessingServiceAdviceTest {
     }
 
     @Test
-    void when_condition_false_then_Else() throws Exception {
+    void whenConditionFalseThenElse() throws Exception {
         String xmlRoutes = DeploymentUtils.loadXml("routes/choice.xml");
 
         var deploymentUpdate = DeploymentUtils.deploymentFromXml(xmlRoutes);

@@ -18,10 +18,10 @@ package org.qubership.integration.platform.engine.unit.util;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.qubership.integration.platform.engine.camel.CorrelationIdSetter;
 import org.qubership.integration.platform.engine.camel.context.propagation.constant.BusinessIds;
 import org.qubership.integration.platform.engine.util.MDCUtil;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 import org.slf4j.MDC;
 
 import java.util.LinkedHashMap;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class MDCUtilTest {
 
     @BeforeEach
@@ -43,7 +43,7 @@ class MDCUtilTest {
     }
 
     @Test
-    void should_put_business_ids_string_when_setBusinessIds_called() {
+    void shouldPutBusinessIdsStringWhenSetBusinessIdsCalled() {
         Map<Object, Object> ids = new LinkedHashMap<>();
         ids.put("orderId", "o-1");
         ids.put("customerId", 42);
@@ -54,7 +54,7 @@ class MDCUtilTest {
     }
 
     @Test
-    void should_overwrite_business_ids_when_setBusinessIds_called_twice() {
+    void shouldOverwriteBusinessIdsWhenSetBusinessIdsCalledTwice() {
         Map<Object, Object> first = Map.of("a", 1);
         Map<Object, Object> second = Map.of("b", 2);
 
@@ -65,30 +65,30 @@ class MDCUtilTest {
     }
 
     @Test
-    void should_store_empty_braces_when_setBusinessIds_receives_empty_map() {
+    void shouldStoreEmptyBracesWhenSetBusinessIdsReceivesEmptyMap() {
         MDCUtil.setBusinessIds(Map.of());
         assertEquals("{}", MDC.get(BusinessIds.BUSINESS_IDS));
     }
 
     @Test
-    void should_throw_NPE_when_setBusinessIds_receives_null() {
+    void shouldThrowNpeWhenSetBusinessIdsReceivesNull() {
         assertThrows(NullPointerException.class, () -> MDCUtil.setBusinessIds(null));
     }
 
     @Test
-    void should_put_correlation_id_when_setCorrelationId_called() {
+    void shouldPutCorrelationIdWhenSetCorrelationIdCalled() {
         MDCUtil.setCorrelationId("corr-123");
         assertEquals("corr-123", MDC.get(CorrelationIdSetter.CORRELATION_ID));
     }
 
     @Test
-    void should_put_request_id_when_setRequestId_called() {
+    void shouldPutRequestIdWhenSetRequestIdCalled() {
         MDCUtil.setRequestId("req-777");
         assertEquals("req-777", MDC.get("requestId"));
     }
 
     @Test
-    void should_clear_all_values_when_clear_called() {
+    void shouldClearAllValuesWhenClearCalled() {
         MDCUtil.setBusinessIds(Map.of("k", "v"));
         MDCUtil.setCorrelationId("c-1");
         MDCUtil.setRequestId("r-1");

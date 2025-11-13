@@ -17,45 +17,45 @@
 package org.qubership.integration.platform.engine.unit.util;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.qubership.integration.platform.engine.util.MapperUtils;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class MapperUtilsTest {
 
-    @Test void should_return_null_when_fromTimestamp_receives_null() {
+    @Test void shouldReturnNullWhenFromTimestampReceivesNull() {
         assertNull(MapperUtils.fromTimestamp(null));
     }
 
-    @Test void should_return_null_when_toTimestamp_receives_null() {
+    @Test void shouldReturnNullWhenToTimestampReceivesNull() {
         assertNull(MapperUtils.toTimestamp(null));
     }
 
-    @Test void should_return_same_millis_when_fromTimestamp_has_zero_nanos() {
+    @Test void shouldReturnSameMillisWhenFromTimestampHasZeroNanos() {
         long ms = 1_696_000_000_123L;
         Timestamp ts = new Timestamp(ms);
         assertEquals(ms, MapperUtils.fromTimestamp(ts));
     }
 
-    @Test void should_round_trip_millis_only() {
+    @Test void shouldRoundTripMillisOnly() {
         long ms = 42L;
         Long back = MapperUtils.fromTimestamp(MapperUtils.toTimestamp(ms));
         assertEquals(ms, back);
     }
 
-    @Test void should_drop_submillisecond_nanos_when_mapping_to_long() {
+    @Test void shouldDropSubMilliSecondNanosWhenMappingToLong() {
         long baseMs = 1_000L;
         Timestamp ts = new Timestamp(baseMs);
         ts.setNanos(999_999);
         assertEquals(baseMs, MapperUtils.fromTimestamp(ts));
     }
 
-    @Test void should_include_whole_milliseconds_from_nanos_in_getTime() {
+    @Test void shouldIncludeWholeMillisecondsFromNanosInGetTime() {
         long baseMs = 1_650_000_000_000L;
         Timestamp ts = new Timestamp(baseMs);
         ts.setNanos(987_654_321);

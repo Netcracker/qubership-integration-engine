@@ -17,25 +17,26 @@
 package org.qubership.integration.platform.engine.unit.util.log;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.qubership.integration.platform.engine.util.log.ExtendedErrorLogger;
 import org.qubership.integration.platform.engine.util.log.ExtendedErrorLoggerFactory;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class ExtendedErrorLoggerFactoryTest {
 
     @Test
-    void should_create_new_instance_each_time_when_getLogger_by_name() {
+    void shouldCreateNewInstanceEachTimeWhenGetLoggerByName() {
         ExtendedErrorLogger a = ExtendedErrorLoggerFactory.getLogger("x");
         ExtendedErrorLogger b = ExtendedErrorLoggerFactory.getLogger("x");
         assertNotSame(a, b);
     }
 
+
     @Test
-    void should_create_logger_for_class_when_getLogger_by_class() {
+    void shouldCreateLoggerForClassWhenGetLoggerByClass() {
         ExtendedErrorLogger log = ExtendedErrorLoggerFactory.getLogger(Integer.class);
         assertNotNull(log);
     }

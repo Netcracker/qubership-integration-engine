@@ -1,13 +1,28 @@
+/*
+ * Copyright 2024-2025 NetCracker Technology Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.qubership.integration.platform.engine.unit.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.ExchangeExtension;
+import org.apache.camel.Message;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -15,6 +30,7 @@ import org.qubership.integration.platform.engine.model.SessionElementProperty;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants.Properties;
 import org.qubership.integration.platform.engine.util.ExchangeUtils;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -24,21 +40,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.qubership.integration.platform.engine.model.constants.CamelConstants.INTERNAL_PROPERTY_PREFIX;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class ExchangeUtilsTest {
 
     @Test
-    void should_return_true_when_key_is_variables_property_map_name() {
+    void shouldReturnTrueWhenKeyIsVariablesPropertyMapName() {
         Assertions.assertTrue(ExchangeUtils.isCommonOrSystemVariableMap(Properties.VARIABLES_PROPERTY_MAP_NAME));
     }
 
     @Test
-    void should_return_false_when_key_is_not_variables_property_map_name() {
+    void shouldReturnFalseWhenKeyIsNotVariablesPropertyMapName() {
         assertFalse(ExchangeUtils.isCommonOrSystemVariableMap("somethingElse"));
     }
 
     @Test
-    void should_interrupt_and_prepare_message_when_interrupt_without_exception() {
+    void shouldInterruptAndPrepareMessageWhenInterruptWithoutException() {
         Exchange exchange = mock(Exchange.class);
         ExchangeExtension ext = mock(ExchangeExtension.class);
         Message msg = mock(Message.class);
@@ -55,7 +71,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_interrupt_and_put_exception_message_when_interrupt_with_exception() {
+    void shouldInterruptAndPutExceptionMessageWhenInterruptWithException() {
         Exchange exchange = mock(Exchange.class);
         ExchangeExtension ext = mock(ExchangeExtension.class);
         Message msg = mock(Message.class);
@@ -78,7 +94,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_filter_out_variables_map_and_internal_properties_and_serialize_the_rest() {
+    void shouldFilterOutVariablesMapAndInternalPropertiesAndSerializeTheRest() {
         Exchange exchange = mock(Exchange.class);
 
         Map<String, Object> props = new LinkedHashMap<>();
@@ -134,7 +150,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_return_null_property_when_serialization_throws_JsonProcessingException() throws Exception {
+    void shouldReturnNullPropertyWhenSerializationThrowsJsonProcessingException() throws Exception {
         Exchange exchange = mock(Exchange.class);
         DummyPojo pojo = new DummyPojo();
 
@@ -160,7 +176,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_set_content_type_when_missing() {
+    void shouldSetContentTypeWhenMissing() {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
         Map<String, Object> headers = new HashMap<>();
@@ -175,7 +191,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_not_override_existing_content_type() {
+    void shouldNotOverrideExistingContentType() {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
         Map<String, Object> headers = new HashMap<>();
@@ -190,7 +206,7 @@ class ExchangeUtilsTest {
     }
 
     @Test
-    void should_filter_by_predicate_and_drop_null_values() {
+    void shouldFilterByPredicateAndDropNullValues() {
         Map<String, Object> in = new LinkedHashMap<>();
         in.put("x.a", 1);
         in.put("x.b", null);

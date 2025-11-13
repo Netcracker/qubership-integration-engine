@@ -17,23 +17,23 @@
 package org.qubership.integration.platform.engine.unit.util.log;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.qubership.integration.platform.engine.errorhandling.errorcode.ErrorCode;
 import org.qubership.integration.platform.engine.util.log.ExtendedErrorLogger;
 import org.qubership.integration.platform.engine.util.log.ExtendedErrorLoggerFactory;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.mockito.Mockito.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class ExtendedErrorLoggerTest {
 
     @Test
-    void should_prefix_plain_message_when_errorCode_present() {
+    void shouldPrefixPlainMessageWhenErrorCodePresent() {
         Logger delegate = mock(Logger.class);
         ErrorCode code = mock(ErrorCode.class);
         when(code.getFormattedCode()).thenReturn("E-123");
@@ -49,7 +49,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_not_prefix_plain_message_when_errorCode_is_null() {
+    void shouldNotPrefixPlainMessageWhenErrorCodeIsNull() {
         Logger delegate = mock(Logger.class);
 
         try (MockedStatic<LoggerFactory> mocked = Mockito.mockStatic(LoggerFactory.class)) {
@@ -63,7 +63,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_prefix_and_forward_single_arg_when_format_with_one_arg() {
+    void shouldPrefixAndForwardSingleArgWhenFormatWithOneArg() {
         Logger delegate = mock(Logger.class);
         ErrorCode code = mock(ErrorCode.class);
         when(code.getFormattedCode()).thenReturn("E-42");
@@ -79,7 +79,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_prefix_and_forward_two_args_when_format_with_two_args() {
+    void shouldPrefixAndForwardTwoArgsWhenFormatWithTwoArgs() {
         Logger delegate = mock(Logger.class);
         ErrorCode code = mock(ErrorCode.class);
         when(code.getFormattedCode()).thenReturn("E-7");
@@ -95,7 +95,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_prefix_and_forward_varargs_when_format_with_varargs() {
+    void shouldPrefixAndForwardVarArgsWhenFormatWithVarArgs() {
         Logger delegate = mock(Logger.class);
         ErrorCode code = mock(ErrorCode.class);
         when(code.getFormattedCode()).thenReturn("E-VA");
@@ -111,7 +111,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_prefix_and_forward_throwable_when_error_with_throwable() {
+    void shouldPrefixAndForwardThrowableWhenErrorWithThrowable() {
         Logger delegate = mock(Logger.class);
         ErrorCode code = mock(ErrorCode.class);
         when(code.getFormattedCode()).thenReturn("E-T");
@@ -128,7 +128,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_use_class_name_when_constructed_via_factory_with_class() {
+    void shouldUseClassNameWhenConstructedViaFactoryWithClass() {
         Logger delegate = mock(Logger.class);
 
         try (MockedStatic<LoggerFactory> mocked = Mockito.mockStatic(LoggerFactory.class)) {
@@ -142,7 +142,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_leave_plain_error_overloads_untouched() {
+    void shouldLeavePlainErrorOverloadsUntouched() {
         Logger delegate = mock(Logger.class);
 
         try (MockedStatic<LoggerFactory> mocked = Mockito.mockStatic(LoggerFactory.class)) {
@@ -160,7 +160,7 @@ class ExtendedErrorLoggerTest {
     }
 
     @Test
-    void should_return_delegate_name_from_getName() {
+    void shouldReturnDelegateNameFromGetName() {
         Logger delegate = mock(Logger.class);
         when(delegate.getName()).thenReturn("delegate.name");
 

@@ -18,78 +18,88 @@ package org.qubership.integration.platform.engine.unit.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.qubership.integration.platform.engine.util.SimpleHttpUriUtils;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 
 import java.net.MalformedURLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class SimpleHttpUriUtilsTest {
 
-    @Test void should_return_same_uri_when_http_scheme_present() throws MalformedURLException {
+    @Test
+    void shouldReturnSameUriWhenHttpSchemePresent() throws MalformedURLException {
         String in = "http://example.com/path";
         Assertions.assertEquals(in, SimpleHttpUriUtils.formatUri(in));
     }
 
-    @Test void should_return_same_uri_when_https_and_port_present() throws MalformedURLException {
+    @Test
+    void shouldReturnSameUriWhenHttpsAndPortPresent() throws MalformedURLException {
         String in = "https://example.com:8080/api";
         assertEquals(in, SimpleHttpUriUtils.formatUri(in));
     }
 
-    @Test void should_add_https_scheme_when_host_without_scheme() throws MalformedURLException {
+    @Test
+    void shouldAddHttpsSchemeWhenHostWithoutScheme() throws MalformedURLException {
         assertEquals("https://example.com", SimpleHttpUriUtils.formatUri("example.com"));
     }
 
-    @Test void should_add_https_scheme_when_host_and_path_without_scheme() throws MalformedURLException {
+    @Test
+    void shouldAddHttpsSchemeWhenHostAndPathWithoutScheme() throws MalformedURLException {
         assertEquals("https://example.com/path", SimpleHttpUriUtils.formatUri("example.com/path"));
     }
 
-    @Test void should_add_https_scheme_when_localhost_with_port_and_path() throws MalformedURLException {
+    @Test
+    void shouldAddHttpsSchemeWhenHostWithPortAndPath() throws MalformedURLException {
         assertEquals("https://localhost:8080/api", SimpleHttpUriUtils.formatUri("localhost:8080/api"));
     }
 
-    @Test void should_add_https_scheme_when_ipv4_without_scheme() throws MalformedURLException {
+    @Test
+    void shouldAddHttpsSchemeWhenIpv4WithoutScheme() throws MalformedURLException {
         assertEquals("https://127.0.0.1", SimpleHttpUriUtils.formatUri("127.0.0.1"));
     }
 
-    @Test void should_throw_when_input_is_empty() {
+    @Test
+    void shouldThrowWhenInputIsEmpty() {
         assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri(""));
     }
 
-    @Test void should_throw_when_input_is_relative_path() {
+    @Test
+    void shouldThrowWhenInputIsRelativePath() {
         assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("/relative/path"));
     }
 
-    @Test void should_return_null_when_input_is_null() throws MalformedURLException {
+    @Test
+    void shouldReturnNullWhenInputIsNull() throws MalformedURLException {
         assertNull(SimpleHttpUriUtils.formatUri(null));
     }
 
-    @Test void should_be_idempotent_after_first_formatting() throws MalformedURLException {
+    @Test
+    void shouldBeIdempotentAfterFirstFormatting() throws MalformedURLException {
         String once = SimpleHttpUriUtils.formatUri("example.com/path");
         String twice = SimpleHttpUriUtils.formatUri(once);
         assertEquals(once, twice);
     }
 
     //TODO Should we check for unsuitable protocol types ?
-//    @Test void should_throw_when_scheme_is_unsupported_ftp() {
-//        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("ftp://example.com"));
-//    }
+    //    @Test void should_throw_when_scheme_is_unsupported_ftp() {
+    //        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("ftp://example.com"));
+    //    }
 
     //TODO Looks like missing case
-//    @Test void should_throw_when_http_scheme_has_no_host() {
-//        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("http://"));
-//    }
+    //    @Test void should_throw_when_http_scheme_has_no_host() {
+    //        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("http://"));
+    //    }
 
     //TODO Should we check not only port numbers count but actual port values range 0-65535
-//    @Test void should_accept_max_port_65535_when_scheme_present() throws MalformedURLException {
-//        String in = "https://example.com:65535/ok";
-//        assertEquals(in, SimpleHttpUriUtils.formatUri(in));
-//    }
+    //    @Test void should_accept_max_port_65535_when_scheme_present() throws MalformedURLException {
+    //        String in = "https://example.com:65535/ok";
+    //        assertEquals(in, SimpleHttpUriUtils.formatUri(in));
+    //    }
 
-//    @Test void should_throw_when_port_exceeds_range_65536() {
-//        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("example.com:65536"));
-//    }
+    //    @Test void should_throw_when_port_exceeds_range_65536() {
+    //        assertThrows(MalformedURLException.class, () -> SimpleHttpUriUtils.formatUri("example.com:65536"));
+    //    }
 }

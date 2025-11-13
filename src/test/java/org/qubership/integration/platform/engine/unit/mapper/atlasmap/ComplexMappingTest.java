@@ -22,7 +22,9 @@ import io.atlasmap.api.AtlasSession;
 import io.atlasmap.core.DefaultAtlasContextFactory;
 import io.atlasmap.json.v2.JsonField;
 import io.atlasmap.v2.*;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
+import org.qubership.integration.platform.engine.utils.DisplayNameUtils;
 import org.qubership.integration.platform.mapper.ComplexField;
 
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@DisplayNameGeneration(DisplayNameUtils.ReplaceCamelCase.class)
 class ComplexMappingTest {
     private static final String XML_SOURCE = """
             <document>
