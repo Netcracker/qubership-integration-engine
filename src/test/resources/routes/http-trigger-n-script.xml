@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?><routes xmlns="http://camel.apache.org/schema/spring"><route><onCompletion><process ref="chainFinishProcessor"/></onCompletion><process ref="chainStartProcessor"/><onCompletion>
+    <process ref="httpTriggerFinishProcessor"/>
+</onCompletion>
+    <onCompletion mode="BeforeConsumer">
+        <removeHeader name="Authorization"/>
+    </onCompletion>
+    <onCompletion mode="BeforeConsumer" onFailureOnly="true">
+        <setProperty name="internalProperty_httpThreadFailed">
+            <constant>true</constant>
+        </setProperty>
+        <setProperty name="internalProperty_sessionFailed">
+            <constant>true</constant>
+        </setProperty>
+
+        <process ref="chainExceptionResponseHandlerProcessor" />
+
+    </onCompletion>
+
+
+    <from uri="servlet-custom:/simple-test?chunked=true&amp;httpMethodRestrict=GET&amp;httpBinding=handlingHttpBinding&amp;tagsProvider=#94128165-f0be-46e4-8816-db0ebe24d6e3"/>
+
+    <step id="94128165-f0be-46e4-8816-db0ebe24d6e3">
+        <setProperty name="internalProperty_rejectRequestIfNonNullBodyGetDelete">
+            <constant>true</constant>
+        </setProperty>
+        <setProperty name="internalProperty_allowedContentTypes">
+            <simple resultType="java.lang.String[]">[]</simple>
+        </setProperty>
+
+        <doTry>
+            <setProperty name="internalProperty_rbac_access_policy">
+                <constant resultType="org.qubership.integration.platform.engine.security.QipSecurityAccessPolicy">[]</constant>
+            </setProperty>
+            <policy ref="rbacPolicy">
+                <step id="Validate Request--94128165-f0be-46e4-8816-db0ebe24d6e3">
+                    <process ref="httpTriggerProcessor" />
+                </step>
+            </policy>
+
+            <doCatch>
+                <exception>org.qubership.integration.platform.engine.errorhandling.ValidationException</exception>
+                <setProperty name="internalProperty_sessionFailed">
+                    <constant>true</constant>
+                </setProperty>
+                <process ref="chainExceptionResponseHandlerProcessor" />
+
+
+                <setProperty name="internalProperty_elementFailed">
+                    <constant>true</constant>
+                </setProperty>
+                <process ref="interruptExchangeProcessor" />
+            </doCatch>
+        </doTry>
+    </step>
+    <toD uri="direct:e9cfa2d0-b78a-4714-b00c-c8d7d944c845"/></route><route><from uri="direct:e9cfa2d0-b78a-4714-b00c-c8d7d944c845"/><script id="ab4c6471-16e2-4ed9-b185-720ecf437cbe">
+    <groovy>
+        exchange.getMessage().setBody(&quot;OK&quot;);
+    </groovy>
+</script>
+</route></routes>

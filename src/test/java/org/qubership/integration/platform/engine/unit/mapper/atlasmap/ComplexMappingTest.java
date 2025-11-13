@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.qubership.integration.platform.engine.mapper.atlasmap;
+package org.qubership.integration.platform.engine.unit.mapper.atlasmap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.atlasmap.api.AtlasContext;
