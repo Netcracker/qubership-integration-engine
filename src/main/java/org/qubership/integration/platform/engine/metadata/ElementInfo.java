@@ -13,6 +13,7 @@ public class ElementInfo {
     private String id;
     private String name;
     private String type;
+    private String chainId;
     private String parentId;
     private String reuseId;
     private boolean hasIntermediateParents;

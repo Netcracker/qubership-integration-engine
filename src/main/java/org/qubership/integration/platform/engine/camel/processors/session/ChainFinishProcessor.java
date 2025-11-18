@@ -25,22 +25,21 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.lang3.StringUtils;
 import org.qubership.integration.platform.engine.errorhandling.errorcode.ErrorCode;
+import org.qubership.integration.platform.engine.metadata.ChainInfo;
+import org.qubership.integration.platform.engine.metadata.util.MetadataUtil;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants.Properties;
-import org.qubership.integration.platform.engine.model.deployment.properties.CamelDebuggerProperties;
-import org.qubership.integration.platform.engine.model.deployment.properties.DeploymentRuntimeProperties;
-import org.qubership.integration.platform.engine.model.logging.LogPayload;
+import org.qubership.integration.platform.engine.model.deployment.properties.ChainRuntimeProperties;
 import org.qubership.integration.platform.engine.model.logging.SessionsLoggingLevel;
 import org.qubership.integration.platform.engine.service.ExecutionStatus;
 import org.qubership.integration.platform.engine.service.SdsService;
 import org.qubership.integration.platform.engine.service.debugger.CamelDebugger;
-import org.qubership.integration.platform.engine.service.debugger.CamelDebuggerPropertiesService;
+import org.qubership.integration.platform.engine.service.debugger.ChainRuntimePropertiesService;
 import org.qubership.integration.platform.engine.service.debugger.kafkareporting.SessionsKafkaReportingService;
 import org.qubership.integration.platform.engine.service.debugger.logging.ChainLogger;
 import org.qubership.integration.platform.engine.service.debugger.metrics.MetricsService;
 import org.qubership.integration.platform.engine.service.debugger.sessions.SessionsService;
 import org.qubership.integration.platform.engine.service.debugger.util.DebuggerUtils;
-import org.qubership.integration.platform.engine.service.debugger.util.MaskedFieldUtils;
 import org.qubership.integration.platform.engine.service.debugger.util.PayloadExtractor;
 import org.qubership.integration.platform.engine.util.InjectUtil;
 
@@ -50,7 +49,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,7 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChainFinishProcessor implements Processor {
 
     private final MetricsService metricsService;
-    private final CamelDebuggerPropertiesService propertiesService;
+    private final ChainRuntimePropertiesService propertiesService;
     private final SessionsService sessionsService;
     private final Optional<SessionsKafkaReportingService> sessionsKafkaReportingService;
     private final Optional<SdsService> sdsService;
@@ -70,7 +68,7 @@ public class ChainFinishProcessor implements Processor {
 
     @Inject
     public ChainFinishProcessor(MetricsService metricsService,
-                                CamelDebuggerPropertiesService propertiesService,
+                                ChainRuntimePropertiesService propertiesService,
                                 SessionsService sessionsService,
                                 Instance<SessionsKafkaReportingService> sessionsKafkaReportingService,
                                 Instance<SdsService> sdsService,
@@ -86,6 +84,8 @@ public class ChainFinishProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+        ChainInfo chainInfo = MetadataUtil.getChainInfo(exchange);
+
         AtomicInteger sessionActiveThreadCounter = exchange.getProperty(
             Properties.SESSION_ACTIVE_THREAD_COUNTER, null, AtomicInteger.class);
         if (sessionActiveThreadCounter == null) {
@@ -117,7 +117,7 @@ public class ChainFinishProcessor implements Processor {
         // finish session if this is the last thread
         if (sessionActiveThreadCounter == null || sessionActiveThreadCounter.decrementAndGet() <= 0) {
             CamelDebugger camelDebugger = ((CamelDebugger) exchange.getContext().getDebugger());
-            CamelDebuggerProperties dbgProperties = propertiesService.getProperties(exchange);
+            ChainRuntimeProperties runtimeProperties = propertiesService.getRuntimeProperties(exchange);
 
             ExecutionStatus executionStatus = ExecutionStatus.COMPLETED_NORMALLY;
             for (Entry<Long, ExecutionStatus> entry : threadsStatuses.entrySet()) {
@@ -127,7 +127,6 @@ public class ChainFinishProcessor implements Processor {
             String started = exchange.getProperty(CamelConstants.Properties.START_TIME,
                 String.class);
             String finished = LocalDateTime.now().toString();
-            DeploymentRuntimeProperties runtimeProperties = dbgProperties.getRuntimeProperties(exchange);
             SessionsLoggingLevel sessionLevel = runtimeProperties.calculateSessionLevel(exchange);
             long duration = Duration.between(LocalDateTime.parse(started),
                 LocalDateTime.parse(finished)).toMillis();
@@ -141,45 +140,19 @@ public class ChainFinishProcessor implements Processor {
                     sessionsService.logSessionElementAfter(
                             exchange,
                             exchange.getProperty(Properties.LAST_EXCEPTION, Exception.class),
-                            sessionId, sessionElementId,
-                            MaskedFieldUtils.getMaskedFields(exchange.getProperty(CamelConstants.Properties.MASKED_FIELDS_PROPERTY)),
-                            runtimeProperties.isMaskingEnabled());
+                            sessionId, sessionElementId);
                 }
             }
 
-            camelDebugger.finishCheckpointSession(exchange, dbgProperties, sessionId, executionStatus, duration);
+            camelDebugger.finishCheckpointSession(exchange, sessionId, executionStatus, duration);
 
-            sessionsService.finishSession(exchange, dbgProperties, executionStatus, finished, duration,
+            sessionsService.finishSession(exchange, executionStatus, finished, duration,
                     syncDurationMap.getOrDefault(sessionId, 0L));
 
             syncDurationMap.remove(sessionId);
 
             if (runtimeProperties.getLogLoggingLevel().isInfoLevel()) {
-
-                String bodyForLogging = "<body not logged>";
-                String headersForLogging = payloadExtractor.extractHeadersForLogging(exchange,
-                        MaskedFieldUtils.getMaskedFields(exchange.getProperty(CamelConstants.Properties.MASKED_FIELDS_PROPERTY)), runtimeProperties.isMaskingEnabled()).toString();
-                String exchangePropertiesForLogging = payloadExtractor.extractExchangePropertiesForLogging(
-                        exchange, MaskedFieldUtils.getMaskedFields(exchange.getProperty(CamelConstants.Properties.MASKED_FIELDS_PROPERTY)), runtimeProperties.isMaskingEnabled()).toString();
-
-                if (runtimeProperties.isLogPayloadEnabled()) {     //Deprecated since 24.4
-                    bodyForLogging = payloadExtractor.extractBodyForLogging(exchange,
-                            MaskedFieldUtils.getMaskedFields(exchange.getProperty(CamelConstants.Properties.MASKED_FIELDS_PROPERTY)), runtimeProperties.isMaskingEnabled());
-                }
-
-                if (runtimeProperties.getLogPayload() != null && !runtimeProperties.getLogPayload().isEmpty()) {
-                    Set<LogPayload> logPayloadSettings = runtimeProperties.getLogPayload();
-                    headersForLogging = logPayloadSettings.contains(LogPayload.HEADERS) ? headersForLogging : "<headers not logged>";
-
-                    exchangePropertiesForLogging = logPayloadSettings.contains(LogPayload.PROPERTIES) ? exchangePropertiesForLogging : "<properties not logged>";
-
-                    bodyForLogging = logPayloadSettings.contains(LogPayload.BODY) ? payloadExtractor.extractBodyForLogging(exchange,
-                            MaskedFieldUtils.getMaskedFields(exchange.getProperty(CamelConstants.Properties.MASKED_FIELDS_PROPERTY)), dbgProperties.getRuntimeProperties(exchange)
-                                    .isMaskingEnabled()) : "<body not logged>";
-                }
-
-                chainLogger.logExchangeFinished(dbgProperties, bodyForLogging, headersForLogging,
-                        exchangePropertiesForLogging, executionStatus, duration);
+                chainLogger.logExchangeFinished(exchange, executionStatus, duration);
             }
 
             if (runtimeProperties.isDptEventsEnabled() && sessionsKafkaReportingService.isPresent()) {
@@ -190,7 +163,7 @@ public class ChainFinishProcessor implements Processor {
                     String originalSessionId = exchange.getProperty(
                         CamelConstants.Properties.CHECKPOINT_INTERNAL_ORIGINAL_SESSION_ID,
                         String.class);
-                    sessionsKafkaReportingService.get().sendFinishedEvent(exchange, dbgProperties, sessionId,
+                    sessionsKafkaReportingService.get().sendFinishedEvent(exchange, sessionId,
                         originalSessionId, parentSessionId,
                         executionStatus);
                 } catch (Exception e) {
@@ -202,7 +175,7 @@ public class ChainFinishProcessor implements Processor {
                     || ExecutionStatus.COMPLETED_WITH_ERRORS.equals(executionStatus)) {
                 try {
                     metricsService.processChainFailure(
-                            dbgProperties.getDeploymentInfo(),
+                            chainInfo,
                             exchange.getProperty(Properties.LAST_EXCEPTION_ERROR_CODE, ErrorCode.UNEXPECTED_BUSINESS_ERROR, ErrorCode.class)
                     );
                 } catch (Exception e) {
@@ -211,7 +184,7 @@ public class ChainFinishProcessor implements Processor {
             }
 
             try {
-                metricsService.processSessionFinish(dbgProperties, executionStatus.toString(),
+                metricsService.processSessionFinish(chainInfo, executionStatus.toString(),
                     duration);
             } catch (Exception e) {
                 log.warn("Failed to create metrics data", e);

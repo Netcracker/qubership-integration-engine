@@ -33,8 +33,8 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DeploymentRuntimeProperties {
-    private static final DeploymentRuntimeProperties DEFAULT_VALUES = DeploymentRuntimeProperties.builder()
+public class ChainRuntimeProperties {
+    private static final ChainRuntimeProperties DEFAULT_VALUE = ChainRuntimeProperties.builder()
         .sessionsLoggingLevel(SessionsLoggingLevel.OFF)
         .logLoggingLevel(LogLoggingLevel.ERROR)
         .logPayload(Set.of(LogPayload.HEADERS, LogPayload.PROPERTIES))
@@ -52,11 +52,11 @@ public class DeploymentRuntimeProperties {
     private boolean maskingEnabled;
 
     public SessionsLoggingLevel calculateSessionLevel(Exchange exchange) {
-        // At first, we are looking for specific header, that sets the logging level.
+        // At first, we are looking for a specific header that sets the logging level.
         Boolean headerValue = exchange.getMessage().getHeader(
             Headers.TRACE_ME,
             Boolean.FALSE, Boolean.class);
-        // After that we are looking for exchange property with same behavior.
+        // After that, we are looking for exchange property with same behavior.
         Boolean propertyValue = exchange.getProperty(
             Properties.TRACE_ME,
             headerValue, Boolean.class);
@@ -66,7 +66,7 @@ public class DeploymentRuntimeProperties {
             return SessionsLoggingLevel.DEBUG;
         }
 
-        // If logging level is not override by header or property, set it from properties.
+        // If the logging level is not override by header or property, set it from properties.
         return sessionsLoggingLevel;
     }
 
@@ -74,7 +74,7 @@ public class DeploymentRuntimeProperties {
         return logLoggingLevel == null ? LogLoggingLevel.defaultLevel() : logLoggingLevel;
     }
 
-    public static DeploymentRuntimeProperties getDefaultValues() {
-        return DEFAULT_VALUES;
+    public static ChainRuntimeProperties getDefault() {
+        return DEFAULT_VALUE;
     }
 }

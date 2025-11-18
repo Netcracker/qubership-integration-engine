@@ -10,7 +10,7 @@ import org.qubership.integration.platform.engine.consul.updates.parsers.ChainRun
 import org.qubership.integration.platform.engine.consul.updates.parsers.CommonVariablesUpdateParser;
 import org.qubership.integration.platform.engine.consul.updates.parsers.DeploymentUpdateParser;
 import org.qubership.integration.platform.engine.consul.updates.parsers.LibrariesUpdateParser;
-import org.qubership.integration.platform.engine.model.deployment.properties.DeploymentRuntimeProperties;
+import org.qubership.integration.platform.engine.model.deployment.properties.ChainRuntimeProperties;
 import org.qubership.integration.platform.engine.model.kafka.systemmodel.CompiledLibraryUpdate;
 
 import java.util.*;
@@ -70,7 +70,7 @@ public class UpdateGetterProducer {
     @Produces
     @Named("chainRuntimePropertiesUpdateGetter")
     @ApplicationScoped
-    public UpdateGetterHelper<Map<String, DeploymentRuntimeProperties>> chainRuntimePropertiesUpdateGetter(
+    public UpdateGetterHelper<Map<String, ChainRuntimeProperties>> chainRuntimePropertiesUpdateGetter(
             ConsulClient consulClient,
             ChainRuntimePropertiesUpdateParser valueParser
     ) {

@@ -26,13 +26,13 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.qubership.integration.platform.engine.consul.DeploymentReadinessService;
 import org.qubership.integration.platform.engine.consul.KVNotFoundException;
 import org.qubership.integration.platform.engine.consul.updates.UpdateGetterHelper;
-import org.qubership.integration.platform.engine.model.deployment.properties.DeploymentRuntimeProperties;
+import org.qubership.integration.platform.engine.model.deployment.properties.ChainRuntimeProperties;
 import org.qubership.integration.platform.engine.model.kafka.systemmodel.CompiledLibraryUpdate;
 import org.qubership.integration.platform.engine.service.CheckpointSessionService;
 import org.qubership.integration.platform.engine.service.IntegrationRuntimeService;
 import org.qubership.integration.platform.engine.service.VariablesService;
 import org.qubership.integration.platform.engine.service.contextstorage.ContextStorageService;
-import org.qubership.integration.platform.engine.service.debugger.CamelDebuggerPropertiesService;
+import org.qubership.integration.platform.engine.service.debugger.ChainRuntimePropertiesService;
 import org.qubership.integration.platform.engine.service.externallibrary.ExternalLibraryService;
 import org.qubership.integration.platform.engine.util.InjectUtil;
 
@@ -65,7 +65,7 @@ public class TasksScheduler {
 
     @Inject
     @Named("chainRuntimePropertiesUpdateGetter")
-    UpdateGetterHelper<Map<String, DeploymentRuntimeProperties>> chainRuntimePropertiesUpdateGetter;
+    UpdateGetterHelper<Map<String, ChainRuntimeProperties>> chainRuntimePropertiesUpdateGetter;
 
     @Inject
     @Named("commonVariablesUpdateGetter")
@@ -75,7 +75,7 @@ public class TasksScheduler {
     Instance<ExternalLibraryService> externalLibraryService;
 
     @Inject
-    CamelDebuggerPropertiesService debuggerPropertiesService;
+    ChainRuntimePropertiesService chainRuntimePropertiesService;
 
     @ConfigProperty(name = "qip.sessions.checkpoints.cleanup.interval")
     String checkpointsInterval;
@@ -167,7 +167,7 @@ public class TasksScheduler {
     public void checkRuntimeDeploymentProperties() {
         try {
             chainRuntimePropertiesUpdateGetter.checkForUpdates(
-                    debuggerPropertiesService::updateRuntimeProperties);
+                    chainRuntimePropertiesService::updateRuntimeProperties);
         } catch (KVNotFoundException e) {
             log.debug("Runtime deployments properties KV is empty. {}", e.getMessage());
         } catch (Exception e) {

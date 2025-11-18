@@ -26,10 +26,11 @@ import org.apache.camel.spi.InflightRepository;
 import org.qubership.integration.platform.engine.camel.metadata.Metadata;
 import org.qubership.integration.platform.engine.camel.metadata.MetadataService;
 import org.qubership.integration.platform.engine.errorhandling.ChainExecutionTerminatedException;
+import org.qubership.integration.platform.engine.metadata.util.MetadataUtil;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants;
-import org.qubership.integration.platform.engine.model.deployment.properties.CamelDebuggerProperties;
+import org.qubership.integration.platform.engine.model.deployment.properties.ChainRuntimeProperties;
 import org.qubership.integration.platform.engine.rest.v1.dto.LiveExchangeDTO;
-import org.qubership.integration.platform.engine.service.debugger.CamelDebuggerPropertiesService;
+import org.qubership.integration.platform.engine.service.debugger.ChainRuntimePropertiesService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
 @Slf4j
 @ApplicationScoped
 public class LiveExchangesService {
-    private final CamelDebuggerPropertiesService propertiesService;
+    private final ChainRuntimePropertiesService propertiesService;
     private final CamelContext camelContext;
     private final MetadataService metadataService;
 
@@ -45,7 +46,7 @@ public class LiveExchangesService {
     public LiveExchangesService(
             CamelContext camelContext,
             MetadataService metadataService,
-            CamelDebuggerPropertiesService propertiesService
+            ChainRuntimePropertiesService propertiesService
     ) {
         this.camelContext = camelContext;
         this.metadataService = metadataService;
@@ -67,8 +68,8 @@ public class LiveExchangesService {
             Long sessionDuration = sessionStartTime == null ? null : System.currentTimeMillis() - sessionStartTime;
             Long exchangeStartTime = exchange.getProperty(CamelConstants.Properties.EXCHANGE_START_TIME_MS, Long.class);
             Long exchangeDuration = exchangeStartTime == null ? null : System.currentTimeMillis() - exchangeStartTime;
-            CamelDebuggerProperties properties = propertiesService.getProperties(exchange);
-            String chainId = properties.getDeploymentInfo().getChainId();
+            ChainRuntimeProperties properties = propertiesService.getRuntimeProperties(exchange);
+            String chainId = MetadataUtil.getChainId(exchange);
             result.add(LiveExchangeDTO.builder()
                         .exchangeId(exchange.getExchangeId())
                         .deploymentId(deploymentId)
@@ -76,7 +77,7 @@ public class LiveExchangesService {
                         .chainId(chainId)
                         .sessionStartTime(sessionStartTime)
                         .sessionDuration(sessionDuration)
-                        .sessionLogLevel(properties.getActualRuntimeProperties().calculateSessionLevel(exchange))
+                        .sessionLogLevel(properties.calculateSessionLevel(exchange))
                         .duration(exchangeDuration)
                         .main(exchange.getProperty(CamelConstants.Properties.IS_MAIN_EXCHANGE, Boolean.class))
                     .build());

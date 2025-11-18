@@ -20,13 +20,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePropertyKey;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants;
 import org.qubership.integration.platform.engine.model.constants.CamelConstants.Properties;
-import org.qubership.integration.platform.engine.model.deployment.properties.CamelDebuggerProperties;
-import org.qubership.integration.platform.engine.model.logging.LogPayload;
 import org.qubership.integration.platform.engine.service.ExecutionStatus;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -89,27 +85,6 @@ public class DebuggerUtils {
             exchanges.forEach((id, value) -> value.getProperty(Properties.STEPS, Deque.class)
                     .removeIf(step -> step.equals(sessionElementId)));
         }
-    }
-
-    public static String chooseLogPayload(Exchange exchange, String body, CamelDebuggerProperties dbgProperties) {
-        if (dbgProperties.getRuntimeProperties(exchange).getLogPayload() != null) {
-            return dbgProperties.getRuntimeProperties(exchange).getLogPayload().contains(LogPayload.BODY) ? body : "<body not logged>";
-        }
-        return dbgProperties.getRuntimeProperties(exchange).isLogPayloadEnabled() ? body : "<body not logged>";
-    }
-
-    public static void initInternalExchangeVariables(Exchange exchange) {
-        exchange.setProperty(Properties.STEPS,
-            exchange.getProperty(Properties.STEPS) == null
-                    ? new ConcurrentLinkedDeque<>()
-                    : new ConcurrentLinkedDeque<>(exchange.getProperty(Properties.STEPS, ConcurrentLinkedDeque.class)));
-
-        exchange.setProperty(Properties.EXCHANGES,
-            exchange.getProperty(Properties.EXCHANGES) == null
-                    ? new ConcurrentHashMap<>()
-                    : new ConcurrentHashMap<>(exchange.getProperty(Properties.EXCHANGES, ConcurrentHashMap.class)));
-
-        exchange.setProperty(Properties.EXCHANGE_START_TIME_MS, System.currentTimeMillis());
     }
 
     public static String getNodeIdForExecutionMap(String nodeId, String splitId) {

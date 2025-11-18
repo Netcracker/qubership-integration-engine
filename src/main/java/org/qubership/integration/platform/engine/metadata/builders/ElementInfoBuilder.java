@@ -24,6 +24,11 @@ public class ElementInfoBuilder {
         return this;
     }
 
+    public ElementInfoBuilder chainId(String value) {
+        delegate.chainId(value);
+        return this;
+    }
+
     public ElementInfoBuilder parentId(String value) {
         delegate.parentId(value);
         return this;

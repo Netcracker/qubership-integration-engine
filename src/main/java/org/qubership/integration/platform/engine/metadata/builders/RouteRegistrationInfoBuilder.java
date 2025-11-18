@@ -6,6 +6,10 @@ import org.qubership.integration.platform.engine.model.deployment.update.RouteTy
 public class RouteRegistrationInfoBuilder {
     private RouteRegistrationInfo.RouteRegistrationInfoBuilder delegate;
 
+    public RouteRegistrationInfoBuilder() {
+        delegate = RouteRegistrationInfo.builder();
+    }
+
     public RouteRegistrationInfoBuilder path(String path) {
         delegate.path(path);
         return this;
