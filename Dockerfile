@@ -1,4 +1,4 @@
-FROM alpine/java:21-jdk
+FROM alpine/java:22-jdk
 
 USER root
 RUN ["chmod", "-R", "755", "/opt/java/openjdk"]
