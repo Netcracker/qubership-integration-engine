@@ -95,7 +95,8 @@ public class ContextSaverProcessor implements Processor {
                         checkpoint,
                         exchange.getProperty(CamelConstants.Properties.SESSION_ID, String.class));
             } else {
-                log.info("Checkpoint skipped due to chain triggered via chain call");
+                log.info("Checkpoint {} skipped due to chain triggered via chain call", exchange.getProperty(
+                        CamelConstants.Properties.CHECKPOINT_ELEMENT_ID, String.class));
             }
         } catch (Exception e) {
             log.error("Failed to create session checkpoint", e);
