@@ -894,7 +894,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>9.3</version>
+                        <version>13.0.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.qubership.integration.platform</groupId>
