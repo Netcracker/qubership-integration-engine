@@ -17,6 +17,6 @@ jobs:
           persist-credentials: false
 
       - name: PR Auto-Assignment (from CODEOWNERS)
-        uses: netcracker/qubership-workflow-hub/actions/pr-assigner@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/pr-assigner@8d542a426ce561c7dce745f6b9cee068d1d7e101 # v2.0.10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
