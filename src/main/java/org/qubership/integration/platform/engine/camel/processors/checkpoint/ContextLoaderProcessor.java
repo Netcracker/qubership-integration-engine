@@ -92,10 +92,10 @@ public class ContextLoaderProcessor implements Processor {
         }
     }
 
-    private CheckpointPayloadOptions parseReplaceOptions(Exchange exchange) throws Exception {
+    private CheckpointPayloadOptions parseReplaceOptions(Exchange exchange) {
         String body = MessageHelper.extractBody(exchange);
         try {
-            return StringUtils.isNotEmpty(body)
+            return StringUtils.isNotEmpty(body) && !"null".equals(body)
                     ? checkpointMapper.readValue(body, CheckpointPayloadOptions.class)
                     : CheckpointPayloadOptions.EMPTY;
         } catch (Exception e) {
