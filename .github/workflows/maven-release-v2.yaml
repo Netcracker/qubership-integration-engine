@@ -82,7 +82,7 @@ jobs:
 
       - name: Check if tag exists
         id: check_tag
-        uses: netcracker/qubership-workflow-hub/actions/tag-action@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/tag-action@8d542a426ce561c7dce745f6b9cee068d1d7e101 # v2.0.10
         with:
           ref: ${{ github.ref }}
           tag-name: 'v${{ inputs.version }}'
@@ -99,7 +99,7 @@ jobs:
       packages: write
     steps:
       - name: "Build and Publish"
-        uses: netcracker/qubership-workflow-hub/actions/maven-release@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/maven-release@8d542a426ce561c7dce745f6b9cee068d1d7e101 # v2.0.10
         with:
           version-type: ${{ github.event.inputs.version-type }}
           ref: ${{ github.ref }}
@@ -127,7 +127,7 @@ jobs:
     steps:
       - name: "Docker Build"
         id: docker_build
-        uses: netcracker/qubership-workflow-hub/actions/docker-action@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/docker-action@8d542a426ce561c7dce745f6b9cee068d1d7e101 # v2.0.10
         with:
           ref: ${{ github.ref }}
           download-artifact: true
