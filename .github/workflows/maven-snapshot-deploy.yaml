@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Deploy Maven Snapshot
-        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@753d4a726521a14cafe4d7ff9fe46a1fe1250d74 # v2.1.0
         with:
           target-store: 'github'
           maven-username: ${{ github.actor }}
