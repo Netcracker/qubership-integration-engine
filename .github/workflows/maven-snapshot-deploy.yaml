@@ -27,7 +27,7 @@ jobs:
         uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
         with:
           target-store: 'github'
-          maven-username: ${{ github.actor }}
+          maven-username: ${{ inputs.profile == 'github' && github.actor || secrets.MAVEN_USER }}
           maven-token: ${{ secrets.GITHUB_TOKEN }}
           gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
