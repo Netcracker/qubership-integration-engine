@@ -12,7 +12,6 @@ on:
       - "main"
       - "**release*"
       - "prettier/**"
-      - "feat/v0.3/**"
   workflow_dispatch:
 permissions:
   packages: write
