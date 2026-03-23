@@ -98,7 +98,7 @@ jobs:
 
   mvn-package:
     needs: [update-pom-version]
-    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v1.0.6
+    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v2.1.2
     with:
       ref: ${{ github.ref }}
       maven-command: "--batch-mode package"
@@ -129,7 +129,7 @@ jobs:
 
   mvn-deploy:
     needs: [update-pom-version, tag]
-    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v1.0.6
+    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v2.1.2
     with:
       ref: ${{ github.ref }}
       maven-command: ${{ (github.event.inputs.dry-run == 'true' && '--batch-mode package') || '--batch-mode deploy' }}
