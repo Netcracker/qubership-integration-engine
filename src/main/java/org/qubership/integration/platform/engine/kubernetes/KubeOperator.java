@@ -18,8 +18,8 @@ package org.qubership.integration.platform.engine.kubernetes;
 
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.openapi.models.V1SecretList;
@@ -39,14 +39,14 @@ public class KubeOperator {
     private static final String DEFAULT_ERR_MESSAGE = "Invalid k8s cluster parameters or API error. ";
 
     private final CoreV1Api coreApi;
-    private final AppsV1Api appsApi;
+    private final CustomObjectsApi customObjectsApi;
 
     private final String namespace;
     private final Boolean devmode;
 
     public KubeOperator() {
         coreApi = new CoreV1Api();
-        appsApi = new AppsV1Api();
+        customObjectsApi = new CustomObjectsApi();
         namespace = null;
         devmode = null;
     }
@@ -55,11 +55,9 @@ public class KubeOperator {
         String namespace,
         Boolean devmode) {
 
-        coreApi = new CoreV1Api();
-        coreApi.setApiClient(client);
+        coreApi = new CoreV1Api(client);
 
-        appsApi = new AppsV1Api();
-        appsApi.setApiClient(client);
+        customObjectsApi = new CustomObjectsApi(client);
 
         this.namespace = namespace;
         this.devmode = devmode;
@@ -112,6 +110,33 @@ public class KubeOperator {
         }
 
         return secrets;
+    }
+
+    public void createCustomObject(KubeCustomObjectRequest request) {
+        try {
+            customObjectsApi.createNamespacedCustomObject(
+                    request.getGroup(),
+                    request.getVersion(),
+                    namespace,
+                    request.getResourceName(),
+                    request.getBody(),
+                    null,
+                    null,
+                    null
+            );
+        } catch (ApiException e) {
+            if (e.getCode() != 404) {
+                if (!isDevmode()) {
+                    log.error(DEFAULT_ERR_MESSAGE + e.getResponseBody());
+                }
+                throw new KubeApiException(DEFAULT_ERR_MESSAGE + e.getResponseBody(), e);
+            }
+        } catch (Exception e) {
+            if (!isDevmode()) {
+                log.error(DEFAULT_ERR_MESSAGE + e.getMessage());
+            }
+            throw new KubeApiException(DEFAULT_ERR_MESSAGE + e.getMessage(), e);
+        }
     }
 
     public Boolean isDevmode() {
