@@ -4,16 +4,18 @@ import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class KubeCustomObject {
 
-    private final String apiVersion;
-    private final String kind;
-    private final V1ObjectMeta metadata;
-    private final Map<String, Object> spec;
+    private String apiVersion;
+    private String kind;
+    private V1ObjectMeta metadata;
+    private Map<String, Object> spec;
 }

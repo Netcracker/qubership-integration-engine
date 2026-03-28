@@ -16,6 +16,8 @@
 
 package org.qubership.integration.platform.engine.kubernetes;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
@@ -38,23 +40,28 @@ public class KubeOperator {
 
     private static final String DEFAULT_ERR_MESSAGE = "Invalid k8s cluster parameters or API error. ";
 
+    private final ObjectMapper objectMapper;
     private final CoreV1Api coreApi;
     private final CustomObjectsApi customObjectsApi;
 
     private final String namespace;
     private final Boolean devmode;
 
-    public KubeOperator() {
+    public KubeOperator(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         coreApi = new CoreV1Api();
         customObjectsApi = new CustomObjectsApi();
         namespace = null;
         devmode = null;
     }
 
-    public KubeOperator(ApiClient client,
-        String namespace,
-        Boolean devmode) {
-
+    public KubeOperator(
+            ObjectMapper objectMapper,
+            ApiClient client,
+            String namespace,
+            Boolean devmode
+    ) {
+        this.objectMapper = objectMapper;
         coreApi = new CoreV1Api(client);
 
         customObjectsApi = new CustomObjectsApi(client);
@@ -113,9 +120,10 @@ public class KubeOperator {
     }
 
     public void createOrReplaceCustomObject(KubeCustomObjectRequest request) {
-        boolean customObjectExist = isCustomObjectExist(request);
+        String resourceVersion = getCustomObjectResourceVersion(request);
         try {
-            if (customObjectExist) {
+            if (resourceVersion != null) {
+                request.getBody().getMetadata().setResourceVersion(resourceVersion);
                 customObjectsApi.replaceNamespacedCustomObject(
                         request.getGroup(),
                         request.getVersion(),
@@ -157,7 +165,7 @@ public class KubeOperator {
         return devmode;
     }
 
-    private boolean isCustomObjectExist(KubeCustomObjectRequest request) {
+    private String getCustomObjectResourceVersion(KubeCustomObjectRequest request) {
         try {
             Object response = customObjectsApi.getNamespacedCustomObject(
                     request.getGroup(),
@@ -166,10 +174,13 @@ public class KubeOperator {
                     request.getResourceNamePlural(),
                     request.getBody().getMetadata().getName()
             );
-            return response != null;
+
+            JsonNode responseNode = objectMapper.convertValue(response, JsonNode.class);
+            JsonNode resourceVersion = responseNode.path("metadata").path("resourceVersion");
+            return resourceVersion.isMissingNode() || resourceVersion.isNull() ? null : resourceVersion.asText();
         } catch (ApiException e) {
             if (e.getCode() == 404) {
-                return false;
+                return null;
             } else {
                 if (!isDevmode()) {
                     log.error(DEFAULT_ERR_MESSAGE + e.getResponseBody());
