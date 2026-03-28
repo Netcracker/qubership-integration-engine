@@ -11,6 +11,6 @@ public class KubeCustomObjectRequest {
 
     private final String group;
     private final String version;
-    private final String resourceName;
+    private final String resourceNamePlural;
     private final KubeCustomObject body;
 }
