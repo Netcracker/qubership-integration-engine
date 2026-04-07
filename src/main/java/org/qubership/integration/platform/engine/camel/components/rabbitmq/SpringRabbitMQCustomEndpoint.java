@@ -301,4 +301,30 @@ public class SpringRabbitMQCustomEndpoint extends SpringRabbitMQEndpoint {
     public void setMetricsCollector(MetricsCollector metricsCollector) {
         this.metricsCollector = metricsCollector;
     }
+
+    @Override
+    protected void doStop() throws Exception {
+        log.debug("Stopping SpringRabbitMQCustomEndpoint: {}", getEndpointUri());
+        destroyConnectionFactory();
+        super.doStop();
+    }
+
+    @Override
+    protected void doShutdown() throws Exception {
+        log.debug("Shutting down SpringRabbitMQCustomEndpoint: {}", getEndpointUri());
+        destroyConnectionFactory();
+        super.doShutdown();
+    }
+
+    private void destroyConnectionFactory() {
+        try {
+            ConnectionFactory connectionFactory = getConnectionFactory();
+            if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {
+                log.debug("Destroying CachingConnectionFactory for endpoint: {}", getEndpointUri());
+                cachingConnectionFactory.destroy();
+            }
+        } catch (Exception e) {
+            log.warn("Error while destroying ConnectionFactory for endpoint: {}", getEndpointUri(), e);
+        }
+    }
 }
