@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class JsonMessageValidator {
     public static final String MESSAGE_VALIDATION_ERROR = "Errors during message validation: ";
-    private static final String EMPTY_BODY_ERROR = "Message body is empty";
+    public static final String EMPTY_BODY_ERROR = "Message body is empty";
 
     public void validate(String jsonMessageAsString, String jsonSchemaAsString) {
         SchemaRegistry schemaRegistry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_7);
