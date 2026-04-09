@@ -18,6 +18,9 @@ package org.qubership.integration.platform.engine.camel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.qubership.integration.platform.engine.errorhandling.ValidationException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,24 +50,12 @@ class JsonMessageValidatorTest {
         assertDoesNotThrow(() -> validator.validate("{\"name\": \"Alice\"}", SCHEMA_STRING_FIELD));
     }
 
-    @Test
-    void nullMessageThrowsValidationException() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    void blankOrEmptyMessageThrowsValidationException(String message) {
         ValidationException ex = assertThrows(ValidationException.class,
-                () -> validator.validate(null, SCHEMA_STRING_FIELD));
-        assertEquals(JsonMessageValidator.EMPTY_BODY_ERROR, ex.getMessage());
-    }
-
-    @Test
-    void blankMessageThrowsValidationException() {
-        ValidationException ex = assertThrows(ValidationException.class,
-                () -> validator.validate("   ", SCHEMA_STRING_FIELD));
-        assertEquals(JsonMessageValidator.EMPTY_BODY_ERROR, ex.getMessage());
-    }
-
-    @Test
-    void emptyStringMessageThrowsValidationException() {
-        ValidationException ex = assertThrows(ValidationException.class,
-                () -> validator.validate("", SCHEMA_STRING_FIELD));
+                () -> validator.validate(message, SCHEMA_STRING_FIELD));
         assertEquals(JsonMessageValidator.EMPTY_BODY_ERROR, ex.getMessage());
     }
 
