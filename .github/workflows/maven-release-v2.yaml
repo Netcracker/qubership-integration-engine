@@ -114,7 +114,7 @@ jobs:
           gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           dry-run: 'false'
       - name: Upload JAR
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: app-jar
           path: ${{ github.event.repository.name }}/**/target/*-exec.jar
