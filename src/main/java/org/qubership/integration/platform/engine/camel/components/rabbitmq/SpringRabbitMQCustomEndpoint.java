@@ -302,6 +302,12 @@ public class SpringRabbitMQCustomEndpoint extends SpringRabbitMQEndpoint {
         this.metricsCollector = metricsCollector;
     }
 
+    /**
+     * Stops the SpringRabbitMQCustomEndpoint by destroying the connection factory
+     * and invoking the superclass stop method.
+     *
+     * @throws Exception if an error occurs during stopping
+     */
     @Override
     protected void doStop() throws Exception {
         log.debug("Stopping SpringRabbitMQCustomEndpoint: {}", getEndpointUri());
@@ -309,6 +315,12 @@ public class SpringRabbitMQCustomEndpoint extends SpringRabbitMQEndpoint {
         super.doStop();
     }
 
+    /**
+     * Shuts down the SpringRabbitMQCustomEndpoint by destroying the connection factory
+     * and invoking the superclass shutdown method.
+     *
+     * @throws Exception if an error occurs during shutting down
+     */
     @Override
     protected void doShutdown() throws Exception {
         log.debug("Shutting down SpringRabbitMQCustomEndpoint: {}", getEndpointUri());
@@ -316,6 +328,10 @@ public class SpringRabbitMQCustomEndpoint extends SpringRabbitMQEndpoint {
         super.doShutdown();
     }
 
+    /**
+     * Destroys the connection factory if it is an instance of CachingConnectionFactory.
+     * Logs a debug message when destroying and a warning if an error occurs during destruction.
+     */
     private void destroyConnectionFactory() {
         try {
             ConnectionFactory connectionFactory = getConnectionFactory();
