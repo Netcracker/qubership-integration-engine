@@ -66,6 +66,8 @@ class SpringRabbitMQCustomEndpointTest {
         method.setAccessible(true);
 
         method.invoke(endpoint);
+
+        verifyNoInteractions(nonCachingConnectionFactory);
     }
 
     @Test
