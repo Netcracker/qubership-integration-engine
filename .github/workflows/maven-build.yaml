@@ -21,7 +21,7 @@ jobs:
           persist-credentials: false
 
       - name: Code quality/security scan on SonarQube
-        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@ac0b35120b940eaa644cdcfee7d4957038998ec2 # v2.0.9
+        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@e64a1ee2fc2f68ab44a4ef416c27d83ce36ba8e1 # v2.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
