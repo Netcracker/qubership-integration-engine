@@ -181,7 +181,7 @@ public class CamelDebugger extends DefaultDebugger {
             ChainElementType chainElementType = ChainElementType.fromString(
                     dbgProperties.getElementProperty(nodeId).get(ChainProperties.ELEMENT_TYPE));
 
-            Map<String, String> headersForLogging = Collections.emptyMap();
+            Map<String, String> headersForLogging = new HashMap<>();
             Map<String, SessionElementProperty> exchangePropertiesForLogging = Collections.emptyMap();
             String bodyForLogging = null;
 

@@ -103,6 +103,7 @@ public class ChainLogger {
         String nodeId
     ) {
         bodyForLogging = DebuggerUtils.chooseLogPayload(exchange, bodyForLogging, dbgProperties);
+        headersForLogging.replace("Authorization", CamelConstants.MASKING_TEMPLATE);
         if (dbgProperties.getRuntimeProperties(exchange).getLogLoggingLevel().isInfoLevel()) {
             ChainElementType type = ChainElementType.fromString(
                 dbgProperties.getElementProperty(nodeId).get(
