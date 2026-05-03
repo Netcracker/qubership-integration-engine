@@ -67,7 +67,7 @@ public class RegisterRoutesInControlPlaneAction implements DeploymentProcessingA
         DeploymentInfo deploymentInfo,
         DeploymentConfiguration deploymentConfiguration
     ) {
-        resolveVariablesInRoutes(deploymentConfiguration);
+        resolveVariablesInRoutes(variablesService, deploymentConfiguration);
 
         // external triggers routes
         List<DeploymentRouteUpdate> gatewayTriggersRoutes = deploymentConfiguration
@@ -105,7 +105,10 @@ public class RegisterRoutesInControlPlaneAction implements DeploymentProcessingA
         }
     }
 
-    private void resolveVariablesInRoutes(DeploymentConfiguration deploymentConfiguration) {
+    public static void resolveVariablesInRoutes(
+        VariablesService variablesService,
+        DeploymentConfiguration deploymentConfiguration
+    ) {
         deploymentConfiguration.getRoutes().stream()
             .filter(route -> nonNull(route.getVariableName())
                 && (RouteType.EXTERNAL_SENDER == route.getType()

@@ -469,6 +469,7 @@ public class IntegrationRuntimeService implements ApplicationContextAware {
         if (maasService.isPresent()) {
             configurationXml = maasService.get().resolveDeploymentMaasParameters(configuration, configurationXml);
         }
+        RegisterRoutesInControlPlaneAction.resolveVariablesInRoutes(variablesService, configuration);
         configurationXml = resolveRouteVariables(configuration.getRoutes(), configurationXml);
         if (xmlPreProcessor.isPresent()) {
             configurationXml = xmlPreProcessor.get().process(configurationXml);
