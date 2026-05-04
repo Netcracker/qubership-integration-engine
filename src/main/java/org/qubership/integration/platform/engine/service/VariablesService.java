@@ -223,7 +223,7 @@ public class VariablesService {
                 .filter(route -> nonNull(route.getVariableName())
                         && (RouteType.EXTERNAL_SENDER == route.getType()
                         || RouteType.EXTERNAL_SERVICE == route.getType()))
-                .filter(route -> variablesService.hasVariableReferences(route.getPath()))
-                .forEach(route -> route.setPath(variablesService.injectVariables(route.getPath())));
+                .filter(route -> hasVariableReferences(route.getPath()))
+                .forEach(route -> route.setPath(injectVariables(route.getPath())));
     }
 }
