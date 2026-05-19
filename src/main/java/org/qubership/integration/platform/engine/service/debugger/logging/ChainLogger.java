@@ -49,6 +49,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 @Slf4j
@@ -59,6 +61,8 @@ public class ChainLogger {
 
     public static final String MDC_TRACE_ID = "trace_id";
     public static final String MDC_SNAP_ID = "span_id";
+
+    private static final Set<String> SENSITIVE_KEYS = Set.of("username", "password");
 
     private final TracingService tracingService;
     private final Optional<OriginatingBusinessIdProvider> originatingBusinessIdProvider;
@@ -103,6 +107,8 @@ public class ChainLogger {
         String nodeId
     ) {
         bodyForLogging = DebuggerUtils.chooseLogPayload(exchange, bodyForLogging, dbgProperties);
+        exchangePropertiesForLogging = filterExchangeProperties(exchangePropertiesForLogging);
+        headersForLogging.replace("Authorization", CamelConstants.MASKING_TEMPLATE);
         if (dbgProperties.getRuntimeProperties(exchange).getLogLoggingLevel().isInfoLevel()) {
             ChainElementType type = ChainElementType.fromString(
                 dbgProperties.getElementProperty(nodeId).get(
@@ -513,5 +519,19 @@ public class ChainLogger {
         String responseTimeStr = responseTime != null ? responseTime.toString() : noValue;
 
         return String.format("[responseTime=%-4s] [direction=%-8s]", responseTimeStr, direction);
+    }
+
+    public Map<String, SessionElementProperty> filterExchangeProperties(Map<String, SessionElementProperty> props) {
+
+        return props.entrySet().stream()
+                .filter(entry -> {
+                    String key = entry.getKey();
+                    if (key == null) {
+                        return false;
+                    }
+                    String lowerKey = key.toLowerCase();
+                    return SENSITIVE_KEYS.stream().noneMatch(lowerKey::contains);
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }
