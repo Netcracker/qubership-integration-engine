@@ -62,7 +62,7 @@ public class ChainLogger {
     public static final String MDC_TRACE_ID = "trace_id";
     public static final String MDC_SNAP_ID = "span_id";
 
-    private static final Set<String> SENSITIVE_KEYS = Set.of("username", "password");
+    private static final Set<String> SENSITIVE_KEYS = Set.of("username", "password", "authorization");
 
     private final TracingService tracingService;
     private final Optional<OriginatingBusinessIdProvider> originatingBusinessIdProvider;
@@ -107,8 +107,12 @@ public class ChainLogger {
         String nodeId
     ) {
         bodyForLogging = DebuggerUtils.chooseLogPayload(exchange, bodyForLogging, dbgProperties);
-        exchangePropertiesForLogging = filterExchangeProperties(exchangePropertiesForLogging);
-        headersForLogging.replace("Authorization", CamelConstants.MASKING_TEMPLATE);
+        Map<String, String> filteredHeaders = filterSensitiveProperties(headersForLogging);
+        headersForLogging.clear();
+        headersForLogging.putAll(filteredHeaders);
+        Map<String, SessionElementProperty> filteredExchangeProperties = filterSensitiveProperties(exchangePropertiesForLogging);
+        exchangePropertiesForLogging.clear();
+        exchangePropertiesForLogging.putAll(filteredExchangeProperties);
         if (dbgProperties.getRuntimeProperties(exchange).getLogLoggingLevel().isInfoLevel()) {
             ChainElementType type = ChainElementType.fromString(
                 dbgProperties.getElementProperty(nodeId).get(
@@ -521,9 +525,9 @@ public class ChainLogger {
         return String.format("[responseTime=%-4s] [direction=%-8s]", responseTimeStr, direction);
     }
 
-    public Map<String, SessionElementProperty> filterExchangeProperties(Map<String, SessionElementProperty> props) {
+    private <T> Map<String, T> filterSensitiveProperties(Map<String, T> properties) {
 
-        return props.entrySet().stream()
+        return properties.entrySet().stream()
                 .filter(entry -> {
                     String key = entry.getKey();
                     if (key == null) {
