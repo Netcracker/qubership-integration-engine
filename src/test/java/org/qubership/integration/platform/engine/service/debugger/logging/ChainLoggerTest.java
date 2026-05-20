@@ -3,6 +3,7 @@ package org.qubership.integration.platform.engine.service.debugger.logging;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import org.qubership.integration.platform.engine.model.deployment.properties.Dep
 import org.qubership.integration.platform.engine.model.logging.LogLoggingLevel;
 import org.qubership.integration.platform.engine.model.logging.LogPayload;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +27,16 @@ class ChainLoggerTest {
     @Spy
     @InjectMocks
     private ChainLogger chainLogger;
+
+    private Map<String, SessionElementProperty> exchangePropertiesForLogging;
+
+    @BeforeEach
+    void setUp() {
+        exchangePropertiesForLogging = new HashMap<>();
+        exchangePropertiesForLogging.put("dbaas_password", new SessionElementProperty("java.lang.String", "secret"));
+        exchangePropertiesForLogging.put("dbaas_username", new SessionElementProperty("java.lang.String", "secret"));
+        exchangePropertiesForLogging.put("namespace", new SessionElementProperty("java.lang.String", "qa08"));
+    }
 
     @Test
     void testLogBeforeProcess() {
@@ -42,16 +54,22 @@ class ChainLoggerTest {
         headersForLogging.put("Authorization", "Bearer real-token");
         headersForLogging.put("X-Request-Id", "123");
 
-        Map<String, SessionElementProperty> exchangePropertiesForLogging = new HashMap<>();
-        exchangePropertiesForLogging.put("dbaas_password", new SessionElementProperty("java.lang.String", "secret"));
-        exchangePropertiesForLogging.put("dbaas_username", new SessionElementProperty("java.lang.String", "secret"));
-        exchangePropertiesForLogging.put("namespace", new SessionElementProperty("java.lang.String", "qa08"));
-
         chainLogger.logBeforeProcess(exchange, dbg, "body", headersForLogging, exchangePropertiesForLogging, "node-1");
 
         assertFalse(headersForLogging.containsKey("Authorization"));
         assertFalse(exchangePropertiesForLogging.containsKey("dbaas_password"));
         assertFalse(exchangePropertiesForLogging.containsKey("dbaas_username"));
         assertTrue(exchangePropertiesForLogging.containsKey("namespace"));
+    }
+
+    @Test
+    void testFilterSensitiveProperties() throws Exception {
+        Method method = ChainLogger.class.getDeclaredMethod("filterSensitiveProperties", Map.class);
+        method.setAccessible(true);
+
+        Map<String, SessionElementProperty> result = (Map<String, SessionElementProperty>) method.invoke(chainLogger, exchangePropertiesForLogging);
+
+        assertFalse(result.containsKey("dbaas_password"));
+        assertTrue(result.containsKey("namespace"));
     }
 }
